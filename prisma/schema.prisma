@@ -1,3 +1,4 @@
+
 datasource db {
   provider = "mongodb"
   url      = env("DATABASE_URL")
@@ -8,34 +9,40 @@ generator client {
 }
 
 model User {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  email     String   @unique
+  id        String     @id @default(auto()) @map("_id") @db.ObjectId
+  email     String     @unique
   name      String?
-  password  String?  // hashed password, null if OAuth only
-  createdAt DateTime @default(now())
-  posts     Post[]   @relation("UserPosts")
-  comments  Comment[] @relation("UserComments")
-  likes     Like[]   @relation("UserLikes")
+  password  String? // hashed password, null if OAuth only
+  createdAt DateTime   @default(now())
+  posts     Post[]     @relation("UserPosts")
+  comments  Comment[]  @relation("UserComments")
+  likes     Like[]     @relation("UserLikes")
   bookmarks Bookmark[] @relation("UserBookmarks")
-  votes     Vote[]   @relation("UserVotes")
+  votes     Vote[]     @relation("UserVotes")
+
+  emailVerified Boolean
+  image         String?
+  updatedAt     DateTime
+  sessions      Session[]
+  accounts      Account[]
 
   @@map("users")
 }
 
 model Post {
-  id          String    @id @default(auto()) @map("_id") @db.ObjectId
-  authorId    String    @db.ObjectId
-  author      User      @relation(fields: [authorId], references: [id], name: "UserPosts")
-  title       String
-  content     String
-  domain      String    // e.g. "food", "cloth", "trends", "tours", "random"
-  location    GeoPoint? // optional geo info for location-based feed
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  comments    Comment[] @relation("PostComments")
-  likes       Like[]    @relation("PostLikes")
-  bookmarks   Bookmark[] @relation("PostBookmarks")
-  votes       Vote[]    @relation("PostVotes")
+  id        String     @id @default(auto()) @map("_id") @db.ObjectId
+  authorId  String     @db.ObjectId
+  author    User       @relation(fields: [authorId], references: [id], name: "UserPosts")
+  title     String
+  content   String
+  domain    String // e.g. "food", "cloth", "trends", "tours", "random"
+  location  GeoPoint? // optional geo info for location-based feed
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  comments  Comment[]  @relation("PostComments")
+  likes     Like[]     @relation("PostLikes")
+  bookmarks Bookmark[] @relation("PostBookmarks")
+  votes     Vote[]     @relation("PostVotes")
 
   @@map("posts")
 }
@@ -53,11 +60,11 @@ model Comment {
 }
 
 model Like {
-  id       String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId   String   @db.ObjectId
-  user     User     @relation(fields: [userId], references: [id], name: "UserLikes")
-  postId   String   @db.ObjectId
-  post     Post     @relation(fields: [postId], references: [id], name: "PostLikes")
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id], name: "UserLikes")
+  postId    String   @db.ObjectId
+  post      Post     @relation(fields: [postId], references: [id], name: "PostLikes")
   createdAt DateTime @default(now())
 
   @@map("likes")
@@ -80,14 +87,60 @@ model Vote {
   user      User     @relation(fields: [userId], references: [id], name: "UserVotes")
   postId    String   @db.ObjectId
   post      Post     @relation(fields: [postId], references: [id], name: "PostVotes")
-  isValid   Boolean  // true if offer/post is still valid
+  isValid   Boolean // true if offer/post is still valid
   createdAt DateTime @default(now())
 
   @@map("votes")
 }
 
 // Embedded type for geo location
+
 type GeoPoint {
   latitude  Float
   longitude Float
+}
+
+model Session {
+  id        String   @id @map("_id")
+  expiresAt DateTime
+  token     String
+  createdAt DateTime
+  updatedAt DateTime
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id @map("_id")
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime
+  updatedAt             DateTime
+
+  @@map("account")
+}
+
+model Verification {
+  id         String    @id @map("_id")
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime?
+  updatedAt  DateTime?
+
+  @@map("verification")
 }
