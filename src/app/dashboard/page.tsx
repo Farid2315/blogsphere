@@ -1,168 +1,260 @@
 "use client";
 
-import { useAuth } from "@/components/auth/session-provider";
+import { useSession } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { 
+  Home, 
+  Search, 
+  Compass, 
+  Play, 
+  MessageCircle, 
+  Heart, 
+  Plus, 
+  Settings,
+  Grid3X3,
+  Bookmark,
+  User,
+  LogOut,
+  Camera,
+  Edit3
+} from "lucide-react";
 
 export default function DashboardPage() {
-  const { session, signOut } = useAuth();
+  const { data: session, isLoading, signOut } = useSession();
   const router = useRouter();
-
+  const [activeTab, setActiveTab] = useState('posts');
 
   useEffect(() => {
-    if (!session.isLoading && !session.user) {
+    if (!isLoading && !session?.user) {
       router.push("/login");
     }
-  }, [session, router]);
-
-
+  }, [session, isLoading, router]);
 
   const handleSignOut = async () => {
     await signOut();
     router.push("/");
   };
 
-  if (session.isLoading) {
+  if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+      <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+          <p className="text-white">Loading...</p>
         </div>
       </div>
     );
   }
 
-  if (!session.user) {
-    return null; // Will redirect to login
+  if (!session?.user) {
+    return null;
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      {/* Navigation */}
-      <nav className="bg-white/80 backdrop-blur-md border-b border-gray-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex-shrink-0">
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                BlogSphere Dashboard
-              </h1>
+    <div className="min-h-screen bg-black text-white flex">
+      {/* Left Sidebar - Navigation */}
+      <div className="w-64 border-r border-gray-800 p-4 fixed h-full">
+        <div className="space-y-6">
+          {/* Logo */}
+          <div className="text-2xl font-bold mb-8">
+            BlogSphere
+          </div>
+
+          {/* Navigation Items */}
+          <nav className="space-y-2">
+            <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800 cursor-pointer">
+              <Home size={24} />
+              <span>Home</span>
             </div>
-            <div className="flex items-center space-x-4">
-              <span className="text-gray-700">
-                Welcome, {session.user.name || session.user.email}
-              </span>
-              <Button
-                variant="outline"
-                onClick={handleSignOut}
-                className="text-gray-700 hover:text-red-600"
-              >
-                Sign Out
-              </Button>
+            <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800 cursor-pointer">
+              <Search size={24} />
+              <span>Search</span>
+            </div>
+            <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800 cursor-pointer">
+              <Compass size={24} />
+              <span>Explore</span>
+            </div>
+            <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800 cursor-pointer">
+              <Play size={24} />
+              <span>Reels</span>
+            </div>
+            <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800 cursor-pointer">
+              <div className="relative">
+                <MessageCircle size={24} />
+                <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                  4
+                </div>
+              </div>
+              <span>Messages</span>
+            </div>
+            <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800 cursor-pointer">
+              <div className="relative">
+                <Heart size={24} />
+                <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-2 h-2"></div>
+              </div>
+              <span>Notifications</span>
+            </div>
+            <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800 cursor-pointer">
+              <Plus size={24} />
+              <span>Create</span>
+            </div>
+            <div className="flex items-center space-x-3 p-3 rounded-lg bg-gray-800 cursor-pointer">
+              <div className="w-6 h-6 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
+                <User size={16} />
+              </div>
+              <span>Profile</span>
+            </div>
+          </nav>
+
+          {/* Sign Out */}
+          <div className="pt-6 border-t border-gray-800">
+            <div 
+              className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800 cursor-pointer"
+              onClick={handleSignOut}
+            >
+              <LogOut size={24} />
+              <span>Sign Out</span>
             </div>
           </div>
         </div>
-      </nav>
+      </div>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* User Info Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle>User Information</CardTitle>
-              <CardDescription>Your account details</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <label className="text-sm font-medium text-gray-500">Email</label>
-                <p className="text-gray-900">{session.user.email}</p>
+      <div className="ml-64 flex-1 p-8">
+        <div className="max-w-4xl mx-auto">
+          {/* Profile Header */}
+          <div className="flex items-start space-x-8 mb-8">
+            {/* Profile Picture */}
+            <div className="flex-shrink-0">
+              <div className="w-32 h-32 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center text-4xl font-bold">
+                {session.user.name ? session.user.name.charAt(0).toUpperCase() : 'U'}
               </div>
-              {session.user.name && (
-                <div>
-                  <label className="text-sm font-medium text-gray-500">Name</label>
-                  <p className="text-gray-900">{session.user.name}</p>
+            </div>
+
+            {/* Profile Info */}
+            <div className="flex-1">
+              <div className="flex items-center space-x-4 mb-4">
+                <h1 className="text-2xl font-light">{session.user.name || 'User'}</h1>
+                <Button variant="outline" className="bg-gray-800 border-gray-600 text-white hover:bg-gray-700">
+                  <Edit3 size={16} className="mr-2" />
+                  Edit Profile
+                </Button>
+                <Button variant="outline" className="bg-gray-800 border-gray-600 text-white hover:bg-gray-700">
+                  <Settings size={16} />
+                </Button>
+              </div>
+
+              {/* Stats */}
+              <div className="flex space-x-8 mb-4">
+                <div className="text-center">
+                  <span className="font-semibold">0</span>
+                  <div className="text-gray-400 text-sm">posts</div>
                 </div>
-              )}
-              <div>
-                <label className="text-sm font-medium text-gray-500">Account Type</label>
-                <p className="text-gray-900 capitalize">
-                  {session.user.provider || "Email/Password"}
-                </p>
+                <div className="text-center">
+                  <span className="font-semibold">0</span>
+                  <div className="text-gray-400 text-sm">followers</div>
+                </div>
+                <div className="text-center">
+                  <span className="font-semibold">0</span>
+                  <div className="text-gray-400 text-sm">following</div>
+                </div>
               </div>
-            </CardContent>
-          </Card>
 
-          {/* Session Info Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Session Information</CardTitle>
-              <CardDescription>Current session details</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <label className="text-sm font-medium text-gray-500">User ID</label>
-                <p className="text-gray-900 font-mono text-sm">{session.user.id}</p>
+              {/* Bio */}
+              <div className="mb-4">
+                <div className="font-semibold">{session.user.name || 'User'}</div>
+                <div className="text-gray-400 text-sm">{session.user.email}</div>
+                <div className="text-gray-400 text-sm">Member since {new Date(session.user.createdAt).toLocaleDateString()}</div>
               </div>
-              <div>
-                <label className="text-sm font-medium text-gray-500">Created At</label>
-                <p className="text-gray-900">
-                  {session.user.createdAt 
-                    ? new Date(session.user.createdAt).toLocaleDateString()
-                    : "N/A"
-                  }
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
+          {/* Content Tabs */}
+          <div className="border-t border-gray-800">
+            <div className="flex justify-center space-x-8">
+              <button
+                onClick={() => setActiveTab('posts')}
+                className={`flex items-center space-x-2 py-4 border-t-2 ${
+                  activeTab === 'posts' ? 'border-white' : 'border-transparent'
+                }`}
+              >
+                <Grid3X3 size={16} />
+                <span className="text-sm font-medium">POSTS</span>
+              </button>
+              <button
+                onClick={() => setActiveTab('saved')}
+                className={`flex items-center space-x-2 py-4 border-t-2 ${
+                  activeTab === 'saved' ? 'border-white' : 'border-transparent'
+                }`}
+              >
+                <Bookmark size={16} />
+                <span className="text-sm font-medium">SAVED</span>
+              </button>
+              <button
+                onClick={() => setActiveTab('tagged')}
+                className={`flex items-center space-x-2 py-4 border-t-2 ${
+                  activeTab === 'tagged' ? 'border-white' : 'border-transparent'
+                }`}
+              >
+                <User size={16} />
+                <span className="text-sm font-medium">TAGGED</span>
+              </button>
+            </div>
+          </div>
 
-
-          {/* Quick Actions Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Quick Actions</CardTitle>
-              <CardDescription>Common tasks</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <Button className="w-full" variant="outline">
-                Create New Post
-              </Button>
-              <Button className="w-full" variant="outline">
-                View My Posts
-              </Button>
-              <Button className="w-full" variant="outline">
-                Edit Profile
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Welcome Message */}
-        <div className="mt-8">
-          <Card>
-            <CardContent className="p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                Welcome to BlogSphere! 🎉
-              </h2>
-              <p className="text-gray-600 mb-4">
-                You're now successfully authenticated. You can start creating posts, exploring content, 
-                and connecting with other creators in the BlogSphere community.
-              </p>
-              <div className="flex space-x-4">
-                <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
-                  Start Creating
-                </Button>
-                <Button variant="outline" onClick={() => router.push("/")}>
-                  Explore Content
+          {/* Content Area */}
+          <div className="mt-8">
+            {activeTab === 'posts' && (
+              <div className="text-center py-16">
+                <div className="w-16 h-16 border-2 border-gray-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Camera size={32} className="text-gray-400" />
+                </div>
+                <h3 className="text-2xl font-light mb-2">Share Photos</h3>
+                <p className="text-gray-400">When you share photos, they will appear on your profile.</p>
+                <Button className="mt-4 bg-blue-500 hover:bg-blue-600">
+                  <Plus size={16} className="mr-2" />
+                  Create Post
                 </Button>
               </div>
-            </CardContent>
-          </Card>
+            )}
+
+            {activeTab === 'saved' && (
+              <div className="text-center py-16">
+                <div className="w-16 h-16 border-2 border-gray-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Bookmark size={32} className="text-gray-400" />
+                </div>
+                <h3 className="text-2xl font-light mb-2">Save Photos</h3>
+                <p className="text-gray-400">Save photos and videos that you want to see again.</p>
+              </div>
+            )}
+
+            {activeTab === 'tagged' && (
+              <div className="text-center py-16">
+                <div className="w-16 h-16 border-2 border-gray-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <User size={32} className="text-gray-400" />
+                </div>
+                                 <h3 className="text-2xl font-light mb-2">Photos of You</h3>
+                 <p className="text-gray-400">When people tag you in photos, they&apos;ll appear here.</p>
+              </div>
+            )}
+          </div>
         </div>
-      </main>
+      </div>
+
+      {/* Mobile Responsive */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-black border-t border-gray-800 p-2">
+        <div className="flex justify-around">
+          <Home size={24} className="text-white" />
+          <Search size={24} className="text-gray-400" />
+          <Plus size={24} className="text-gray-400" />
+          <Heart size={24} className="text-gray-400" />
+          <div className="w-6 h-6 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
+            <User size={16} className="text-white" />
+          </div>
+        </div>
+      </div>
     </div>
   );
 } 

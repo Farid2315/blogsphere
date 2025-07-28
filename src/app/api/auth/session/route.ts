@@ -1,4 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
 
 export async function GET(request: NextRequest) {
   try {
@@ -8,20 +11,17 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ user: null }, { status: 401 });
     }
 
-    // Decode the session token
-    const decoded = Buffer.from(sessionToken, 'base64').toString('utf-8');
-    const [userId] = decoded.split(':');
+    // Find session in database
+    const session = await prisma.session.findUnique({
+      where: { token: sessionToken },
+      include: { user: true }
+    });
 
-    // For now, return a mock user based on the session token
-    // In production, you would look up the user in the database
-    const mockUser = {
-      id: userId,
-      email: Buffer.from(userId, 'base64').toString('utf-8'),
-      name: "Google User",
-      createdAt: new Date().toISOString(),
-    };
+    if (!session || session.expiresAt < new Date()) {
+      return NextResponse.json({ user: null }, { status: 401 });
+    }
 
-    return NextResponse.json({ user: mockUser });
+    return NextResponse.json({ user: session.user });
 
   } catch (error) {
     console.error('Session check error:', error);

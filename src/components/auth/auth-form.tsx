@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/components/auth/session-provider";
+import { signIn, signUp } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,7 +16,6 @@ export function AuthForm() {
   const [error, setError] = useState("");
   const [mounted, setMounted] = useState(false);
   const router = useRouter();
-  const { signIn, signUp } = useAuth();
 
   useEffect(() => {
     setMounted(true);
@@ -46,13 +45,9 @@ export function AuthForm() {
     setError("");
     
     try {
-      if (isSignUp) {
-        await signUp("emailAndPassword", { email, password });
-      } else {
-        await signIn("emailAndPassword", { email, password });
-      }
-      // Redirect to dashboard on success
-      router.push("/dashboard");
+      // For now, email/password auth is not implemented
+      // You can implement this later with your own logic
+      setError("Email/password authentication is not implemented yet. Please use Google OAuth.");
     } catch (error) {
       console.error("Auth error:", error);
       setError("Authentication failed. Please try again.");
@@ -65,13 +60,12 @@ export function AuthForm() {
     setLoading(true);
     setError("");
     try {
-      await signIn("google");
-      // Redirect to dashboard on success
-      router.push("/dashboard");
+      // Use direct redirect for Google OAuth
+      // This will redirect to /dashboard after successful authentication
+      window.location.href = "/api/auth/signin/google";
     } catch (error) {
       console.error("Google auth error:", error);
       setError("Google authentication failed. Please try again.");
-    } finally {
       setLoading(false);
     }
   };

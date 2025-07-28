@@ -1,9 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
-  // This is a temporary route until Better Auth is fully set up
-  // In a real setup, Better Auth would handle this automatically
-  
   // Get the current host from the request
   const host = request.headers.get('host') || 'localhost:3000';
   const protocol = request.headers.get('x-forwarded-proto') || 'http';

@@ -1,4 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -6,7 +9,6 @@ export async function GET(request: NextRequest) {
   const error = searchParams.get('error');
 
   if (error) {
-    // Handle OAuth error
     return NextResponse.redirect(new URL('/login?error=oauth_error', request.url));
   }
 
@@ -15,26 +17,13 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // Debug environment variables
-    console.log('Environment variables:', {
-      GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID ? 'SET' : 'NOT SET',
-      GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET ? 'SET' : 'NOT SET',
-      BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
-    });
-
     // Exchange the authorization code for tokens
     const tokenBody = new URLSearchParams({
       code: code,
       client_id: process.env.GOOGLE_CLIENT_ID!,
       client_secret: process.env.GOOGLE_CLIENT_SECRET!,
-      redirect_uri: `${process.env.BETTER_AUTH_URL}/api/auth/callback/google`,
+      redirect_uri: `${process.env.BETTER_AUTH_URL || 'http://localhost:3000'}/api/auth/callback/google`,
       grant_type: 'authorization_code',
-    });
-
-    console.log('Token exchange request:', {
-      client_id: process.env.GOOGLE_CLIENT_ID,
-      redirect_uri: `${process.env.BETTER_AUTH_URL}/api/auth/callback/google`,
-      code_length: code.length,
     });
 
     const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
@@ -47,11 +36,7 @@ export async function GET(request: NextRequest) {
 
     if (!tokenResponse.ok) {
       const errorText = await tokenResponse.text();
-      console.error('Token exchange failed:', {
-        status: tokenResponse.status,
-        statusText: tokenResponse.statusText,
-        error: errorText,
-      });
+      console.error('Token exchange failed:', errorText);
       throw new Error(`Failed to exchange code for tokens: ${tokenResponse.status} ${errorText}`);
     }
 
@@ -70,30 +55,60 @@ export async function GET(request: NextRequest) {
 
     const userInfo = await userInfoResponse.json();
 
-    // For now, let's create a simple session without database storage
-    // This will work immediately without MongoDB setup issues
-    const mockUser = {
-      id: Buffer.from(userInfo.email).toString('base64'),
-      email: userInfo.email,
-      name: userInfo.name,
-      provider: 'google',
-      createdAt: new Date().toISOString(),
-    };
+    // Store user in database
+    let user = await prisma.user.findUnique({
+      where: { email: userInfo.email }
+    });
 
-    console.log('User authenticated:', mockUser.email);
+    if (!user) {
+      // Create new user
+      user = await prisma.user.create({
+        data: {
+          email: userInfo.email,
+          name: userInfo.name,
+          emailVerified: true,
+          image: userInfo.picture,
+          updatedAt: new Date(),
+        }
+      });
+    } else {
+      // Update existing user
+      user = await prisma.user.update({
+        where: { email: userInfo.email },
+        data: {
+          name: userInfo.name,
+          image: userInfo.picture,
+          updatedAt: new Date(),
+        }
+      });
+    }
 
-    // Create a simple session token (in production, use proper JWT or session management)
-    const sessionToken = Buffer.from(`${mockUser.id}:${Date.now()}`).toString('base64');
-    
+    console.log('User authenticated and stored in database:', user.email);
+
+    // Create session
+    const session = await prisma.session.create({
+      data: {
+        id: `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+        token: `token_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        userId: user.id,
+      }
+    });
+
+    console.log('Session created successfully:', session.id);
+
     // Set session cookie
-    const response = NextResponse.redirect(new URL('/dashboard', request.url));
-    response.cookies.set('session_token', sessionToken, {
+    const response = NextResponse.redirect(new URL('/dashboard', 'http://localhost:3001'));
+    response.cookies.set('session_token', session.token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       maxAge: 60 * 60 * 24 * 7, // 7 days
     });
 
+    console.log('Redirecting to dashboard with session token');
     return response;
 
   } catch (error) {
