@@ -100,7 +100,7 @@ export async function GET(request: NextRequest) {
     console.log('Session created successfully:', session.id);
 
     // Set session cookie
-    const response = NextResponse.redirect(new URL('/dashboard', 'http://localhost:3001'));
+    const response = NextResponse.redirect(new URL('/dashboard', 'http://localhost:3000'));
     response.cookies.set('session_token', session.token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
