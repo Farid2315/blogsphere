@@ -6,77 +6,47 @@ import { z } from "zod";
 const prisma = new PrismaClient();
 
 // Validation schema
-const signupSchema = z.object({
+const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters long"),
-  name: z.string().min(1, "Name is required"),
-  username: z.string()
-    .min(3, "Username must be at least 3 characters long")
-    .max(30, "Username must be at most 30 characters long")
-    .regex(/^[a-zA-Z0-9._]+$/, "Username can only contain letters, numbers, dots, and underscores")
+  password: z.string().min(1, "Password is required"),
 });
-
-// Username validation function
-function isValidUsername(username: string): boolean {
-  const usernameRegex = /^[a-zA-Z0-9._]+$/;
-  return usernameRegex.test(username) && username.length >= 3 && username.length <= 30;
-}
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     
     // Validate input
-    const validatedData = signupSchema.parse(body);
-    const { email, password, name, username } = validatedData;
+    const validatedData = loginSchema.parse(body);
+    const { email, password } = validatedData;
 
-    // Check if username already exists
-    const existingUser = await prisma.user.findFirst({
-      where: {
-        OR: [
-          { email },
-          { username }
-        ]
-      }
-    });
-
-    if (existingUser) {
-      if (existingUser.email === email) {
-        return NextResponse.json(
-          { error: "Email already registered" },
-          { status: 400 }
-        );
-      }
-      if (existingUser.username === username) {
-        return NextResponse.json(
-          { error: "Username already taken" },
-          { status: 400 }
-        );
-      }
-    }
-
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 12);
-
-    // Create user
-    const user = await prisma.user.create({
-      data: {
-        email,
-        username,
-        name,
-        password: hashedPassword,
-        emailVerified: false,
-        updatedAt: new Date(),
-      },
+    // Find user by email
+    const user = await prisma.user.findUnique({
+      where: { email },
       select: {
         id: true,
         email: true,
         username: true,
         name: true,
+        password: true,
         emailVerified: true,
-        createdAt: true,
       }
     });
+
+    if (!user || !user.password) {
+      return NextResponse.json(
+        { error: "Invalid email or password" },
+        { status: 401 }
+      );
+    }
+
+    // Verify password
+    const isValidPassword = await bcrypt.compare(password, user.password);
+    if (!isValidPassword) {
+      return NextResponse.json(
+        { error: "Invalid email or password" },
+        { status: 401 }
+      );
+    }
 
     // Create session
     const session = await prisma.session.create({
@@ -99,9 +69,10 @@ export async function POST(request: NextRequest) {
           email: user.email,
           username: user.username,
           name: user.name,
+          emailVerified: user.emailVerified,
         }
       },
-      { status: 201 }
+      { status: 200 }
     );
 
     response.cookies.set('session_token', session.token, {
@@ -114,7 +85,7 @@ export async function POST(request: NextRequest) {
     return response;
 
   } catch (error) {
-    console.error('Signup error:', error);
+    console.error('Login error:', error);
     
     if (error instanceof z.ZodError) {
       return NextResponse.json(

@@ -61,10 +61,22 @@ export async function GET(request: NextRequest) {
     });
 
     if (!user) {
+      // Generate a unique username from email
+      const baseUsername = userInfo.email.split('@')[0].replace(/[^a-zA-Z0-9._]/g, '');
+      let username = baseUsername;
+      let counter = 1;
+      
+      // Ensure username is unique
+      while (await prisma.user.findUnique({ where: { username } })) {
+        username = `${baseUsername}${counter}`;
+        counter++;
+      }
+
       // Create new user
       user = await prisma.user.create({
         data: {
           email: userInfo.email,
+          username,
           name: userInfo.name,
           emailVerified: true,
           image: userInfo.picture,

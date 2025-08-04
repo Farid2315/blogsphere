@@ -11,7 +11,7 @@ import { Eye, EyeOff } from "lucide-react";
 export default function SignupPage() {
   const [formData, setFormData] = useState({
     email: "",
-    fullname: "",
+    name: "",
     username: "",
     password: "",
   });
@@ -37,23 +37,8 @@ export default function SignupPage() {
       const data = await response.json();
 
       if (response.ok) {
-        // Sign in the user after successful signup
-        const signInResponse = await fetch("/api/auth/signin", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email: formData.email,
-            password: formData.password,
-          }),
-        });
-
-        if (signInResponse.ok) {
-          router.push("/dashboard");
-        } else {
-          setError("Account created but sign-in failed. Please try signing in.");
-        }
+        // Redirect to dashboard after successful signup
+        router.push("/dashboard");
       } else {
         setError(data.error || "Signup failed. Please try again.");
       }
@@ -113,12 +98,12 @@ export default function SignupPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="fullname" className="text-white">Full Name</Label>
+                <Label htmlFor="name" className="text-white">Full Name</Label>
                 <Input
-                  id="fullname"
-                  name="fullname"
+                  id="name"
+                  name="name"
                   type="text"
-                  value={formData.fullname}
+                  value={formData.name}
                   onChange={handleChange}
                   placeholder="Enter your full name"
                   required

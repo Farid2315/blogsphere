@@ -1,9 +1,9 @@
 "use client";
 
-import { useSession } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useAuth } from "@/hooks/use-auth";
 import { 
   Home, 
   Search, 
@@ -22,22 +22,22 @@ import {
 } from "lucide-react";
 
 export default function DashboardPage() {
-  const { data: session, isLoading, signOut } = useSession();
+  const { user, loading, authenticated, logout } = useAuth();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('posts');
 
   useEffect(() => {
-    if (!isLoading && !session?.user) {
+    if (!loading && !authenticated) {
       router.push("/login");
     }
-  }, [session, isLoading, router]);
+  }, [authenticated, loading, router]);
 
   const handleSignOut = async () => {
-    await signOut();
+    await logout();
     router.push("/");
   };
 
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-center">
@@ -48,7 +48,7 @@ export default function DashboardPage() {
     );
   }
 
-  if (!session?.user) {
+  if (!user) {
     return null;
   }
 
@@ -129,14 +129,14 @@ export default function DashboardPage() {
             {/* Profile Picture */}
             <div className="flex-shrink-0">
               <div className="w-32 h-32 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center text-4xl font-bold">
-                {session.user.name ? session.user.name.charAt(0).toUpperCase() : 'U'}
+                {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
               </div>
             </div>
 
             {/* Profile Info */}
             <div className="flex-1">
               <div className="flex items-center space-x-4 mb-4">
-                <h1 className="text-2xl font-light">{session.user.name || 'User'}</h1>
+                <h1 className="text-2xl font-light">{user.name || 'User'}</h1>
                 <Button variant="outline" className="bg-gray-800 border-gray-600 text-white hover:bg-gray-700">
                   <Edit3 size={16} className="mr-2" />
                   Edit Profile
@@ -164,9 +164,9 @@ export default function DashboardPage() {
 
               {/* Bio */}
               <div className="mb-4">
-                <div className="font-semibold">{session.user.name || 'User'}</div>
-                <div className="text-gray-400 text-sm">{session.user.email}</div>
-                <div className="text-gray-400 text-sm">Member since {new Date(session.user.createdAt).toLocaleDateString()}</div>
+                <div className="font-semibold">{user.name || 'User'}</div>
+                <div className="text-gray-400 text-sm">{user.email}</div>
+                <div className="text-gray-400 text-sm">Username: @{user.username}</div>
               </div>
             </div>
           </div>

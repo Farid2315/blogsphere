@@ -11,6 +11,7 @@ generator client {
 model User {
   id        String     @id @default(auto()) @map("_id") @db.ObjectId
   email     String     @unique
+  username  String     @unique
   name      String?
   password  String? // hashed password, null if OAuth only
   createdAt DateTime   @default(now())
