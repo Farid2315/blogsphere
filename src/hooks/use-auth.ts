@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { authClient } from '@/lib/auth-client';
 
 interface User {
   id: string;
@@ -24,12 +25,19 @@ export function useAuth() {
 
   const checkAuth = async () => {
     try {
-      const response = await fetch('/api/auth/session');
-      const data = await response.json();
-
-      if (data.authenticated && data.user) {
+      const session = await authClient.getSession();
+      
+      if (session?.data?.user) {
+        const user = session.data.user;
         setAuthState({
-          user: data.user,
+          user: {
+            id: user.id,
+            email: user.email,
+            username: user.username || user.email.split('@')[0],
+            name: user.name || user.username || user.email.split('@')[0],
+            emailVerified: user.emailVerified || false,
+            image: user.image || undefined,
+          },
           loading: false,
           authenticated: true,
         });
@@ -52,9 +60,7 @@ export function useAuth() {
 
   const logout = async () => {
     try {
-      await fetch('/api/auth/session', {
-        method: 'DELETE',
-      });
+      await authClient.signOut();
       setAuthState({
         user: null,
         loading: false,

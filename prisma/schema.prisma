@@ -9,9 +9,9 @@ generator client {
 }
 
 model User {
-  id        String     @id @default(auto()) @map("_id") @db.ObjectId
+  id        String     @id @default(uuid()) @map("_id")
   email     String     @unique
-  username  String     @unique
+  username  String?
   name      String?
   password  String? // hashed password, null if OAuth only
   createdAt DateTime   @default(now())
@@ -21,9 +21,9 @@ model User {
   bookmarks Bookmark[] @relation("UserBookmarks")
   votes     Vote[]     @relation("UserVotes")
 
-  emailVerified Boolean
+  emailVerified Boolean @default(false)
   image         String?
-  updatedAt     DateTime
+  updatedAt     DateTime @default(now())
   sessions      Session[]
   accounts      Account[]
 
@@ -32,7 +32,7 @@ model User {
 
 model Post {
   id        String     @id @default(auto()) @map("_id") @db.ObjectId
-  authorId  String     @db.ObjectId
+  authorId  String
   author    User       @relation(fields: [authorId], references: [id], name: "UserPosts")
   title     String
   content   String
@@ -52,7 +52,7 @@ model Comment {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   postId    String   @db.ObjectId
   post      Post     @relation(fields: [postId], references: [id], name: "PostComments")
-  authorId  String   @db.ObjectId
+  authorId  String
   author    User     @relation(fields: [authorId], references: [id], name: "UserComments")
   content   String
   createdAt DateTime @default(now())
@@ -62,7 +62,7 @@ model Comment {
 
 model Like {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String   @db.ObjectId
+  userId    String
   user      User     @relation(fields: [userId], references: [id], name: "UserLikes")
   postId    String   @db.ObjectId
   post      Post     @relation(fields: [postId], references: [id], name: "PostLikes")
@@ -73,7 +73,7 @@ model Like {
 
 model Bookmark {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String   @db.ObjectId
+  userId    String
   user      User     @relation(fields: [userId], references: [id], name: "UserBookmarks")
   postId    String   @db.ObjectId
   post      Post     @relation(fields: [postId], references: [id], name: "PostBookmarks")
@@ -84,7 +84,7 @@ model Bookmark {
 
 model Vote {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String   @db.ObjectId
+  userId    String
   user      User     @relation(fields: [userId], references: [id], name: "UserVotes")
   postId    String   @db.ObjectId
   post      Post     @relation(fields: [postId], references: [id], name: "PostVotes")
@@ -95,29 +95,29 @@ model Vote {
 }
 
 // Embedded type for geo location
-
 type GeoPoint {
   latitude  Float
   longitude Float
 }
 
+/* ---------- BetterAuth Models ---------- */
 model Session {
-  id        String   @id @map("_id")
-  expiresAt DateTime
-  token     String
-  createdAt DateTime
-  updatedAt DateTime
-  ipAddress String?
-  userAgent String?
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                   String   @id @default(uuid()) @map("_id")
+  expiresAt            DateTime
+  token                String
+  createdAt            DateTime
+  updatedAt            DateTime
+  ipAddress            String?
+  userAgent            String?
+  userId               String
+  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([token])
   @@map("session")
 }
 
 model Account {
-  id                    String    @id @map("_id")
+  id                    String    @id @default(uuid()) @map("_id")
   accountId             String
   providerId            String
   userId                String
@@ -136,7 +136,7 @@ model Account {
 }
 
 model Verification {
-  id         String    @id @map("_id")
+  id         String    @id @default(uuid()) @map("_id")
   identifier String
   value      String
   expiresAt  DateTime
