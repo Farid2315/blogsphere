@@ -5,26 +5,23 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { 
-  Home, 
-  Search, 
-  Compass, 
-  Play, 
-  MessageCircle, 
-  Heart, 
-  Plus, 
-  Settings,
-  Grid3X3,
-  Bookmark,
+  MapPin,
+  Compass,
+  Utensils,
+  Shirt,
+  Plane,
+  Gamepad2,
+  Smartphone,
+  Music,
+  Star,
   User,
-  LogOut,
-  Camera,
-  Edit3
+  Settings
 } from "lucide-react";
 
 export default function DashboardPage() {
   const { user, loading, authenticated, logout } = useAuth();
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState('posts');
+  const [expandedCategory, setExpandedCategory] = useState('location');
 
   useEffect(() => {
     if (!loading && !authenticated) {
@@ -35,6 +32,28 @@ export default function DashboardPage() {
   const handleSignOut = async () => {
     await logout();
     router.push("/");
+  };
+
+  const handleProfileClick = () => {
+    router.push("/profile");
+  };
+
+  const handleCategoryClick = (categoryId: string) => {
+    if (categoryId === 'restaurants') {
+      router.push("/restaurant");
+    } else if (categoryId === 'fashion') {
+      router.push("/fashion");
+    } else if (categoryId === 'travel') {
+      router.push("/travel");
+    } else if (categoryId === 'gaming') {
+      router.push("/gaming");
+    } else if (categoryId === 'tech') {
+      router.push("/tech");
+    } else if (categoryId === 'music') {
+      router.push("/music");
+    } else if (categoryId === 'reviews') {
+      router.push("/reviews");
+    }
   };
 
   if (loading) {
@@ -52,206 +71,219 @@ export default function DashboardPage() {
     return null;
   }
 
+  const categories = [
+    {
+      id: 'location',
+      name: 'Location',
+      icon: MapPin,
+      expanded: expandedCategory === 'location',
+      subItems: [
+        { name: 'Your Location on GPS', icon: Compass },
+        { name: 'Bangalore' },
+        { name: 'Delhi' },
+        { name: 'Hyderabad' },
+        { name: 'Rajasthan' }
+      ]
+    },
+    { id: 'restaurants', name: 'Restaurants', icon: Utensils },
+    { id: 'fashion', name: 'Fashion', icon: Shirt },
+    { id: 'travel', name: 'Travel', icon: Plane },
+    { id: 'gaming', name: 'Gaming', icon: Gamepad2 },
+    { id: 'tech', name: 'Tech', icon: Smartphone },
+    { id: 'music', name: 'Music', icon: Music },
+    { id: 'reviews', name: 'Product Reviews', icon: Star }
+  ];
+
   return (
     <div className="min-h-screen bg-black text-white flex">
-      {/* Left Sidebar - Navigation */}
-      <div className="w-64 border-r border-gray-800 p-4 fixed h-full">
-        <div className="space-y-6">
+      {/* Left Sidebar - Navigation - Fixed */}
+      <div className="w-56 bg-gray-900 fixed h-full overflow-y-auto">
+        <div className="p-4 space-y-6">
           {/* Logo */}
-          <div className="text-2xl font-bold mb-8">
+          <div className="text-xl font-bold text-white">
             BlogSphere
           </div>
 
-          {/* Navigation Items */}
-          <nav className="space-y-2">
-            <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800 cursor-pointer">
-              <Home size={24} />
-              <span>Home</span>
-            </div>
-            <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800 cursor-pointer">
-              <Search size={24} />
-              <span>Search</span>
-            </div>
-            <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800 cursor-pointer">
-              <Compass size={24} />
-              <span>Explore</span>
-            </div>
-            <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800 cursor-pointer">
-              <Play size={24} />
-              <span>Reels</span>
-            </div>
-            <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800 cursor-pointer">
-              <div className="relative">
-                <MessageCircle size={24} />
-                <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-                  4
-                </div>
+          {/* Explore Section */}
+          <div className="space-y-3">
+            <h3 className="text-white font-semibold text-xs uppercase tracking-wider">
+              Explore
+            </h3>
+            
+            {categories.map((category) => (
+              <div key={category.id} className="space-y-1">
+                <button
+                  onClick={() => {
+                    if (category.subItems) {
+                      setExpandedCategory(expandedCategory === category.id ? '' : category.id);
+                    } else {
+                      handleCategoryClick(category.id);
+                    }
+                  }}
+                  className="w-full flex items-center justify-between p-2 rounded-lg text-left transition-colors text-sm text-gray-300 hover:bg-gray-800 hover:text-white"
+                >
+                  <div className="flex items-center space-x-2">
+                    {category.icon && <category.icon size={16} />}
+                    <span>{category.name}</span>
+                  </div>
+                  {category.subItems && (
+                    <span className={`transform transition-transform text-xs ${
+                      expandedCategory === category.id ? 'rotate-180' : ''
+                    }`}>
+                      ▼
+                    </span>
+                  )}
+                </button>
+                
+                {/* Sub-items */}
+                {category.subItems && expandedCategory === category.id && (
+                  <div className="ml-6 space-y-1">
+                    {category.subItems.map((item, index) => (
+                      <button
+                        key={index}
+                        className="w-full flex items-center space-x-2 p-1.5 rounded-lg text-left text-gray-400 hover:bg-gray-800 hover:text-white transition-colors"
+                      >
+                        {item.icon && <item.icon size={14} />}
+                        <span className="text-xs">{item.name}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
-              <span>Messages</span>
-            </div>
-            <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800 cursor-pointer">
-              <div className="relative">
-                <Heart size={24} />
-                <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-2 h-2"></div>
-              </div>
-              <span>Notifications</span>
-            </div>
-            <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800 cursor-pointer">
-              <Plus size={24} />
-              <span>Create</span>
-            </div>
-            <div className="flex items-center space-x-3 p-3 rounded-lg bg-gray-800 cursor-pointer">
-              <div className="w-6 h-6 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
-                <User size={16} />
-              </div>
-              <span>Profile</span>
-            </div>
-          </nav>
+            ))}
+          </div>
 
-          {/* Sign Out */}
-          <div className="pt-6 border-t border-gray-800">
-            <div 
-              className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800 cursor-pointer"
-              onClick={handleSignOut}
+          {/* Profile and Settings Navigation */}
+          <div className="pt-6 border-t border-gray-700 space-y-2">
+            <button 
+              onClick={handleProfileClick}
+              className="w-full flex items-center space-x-2 p-2 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition-colors"
             >
-              <LogOut size={24} />
-              <span>Sign Out</span>
-            </div>
+              <User size={16} />
+              <span className="text-sm">Profile</span>
+            </button>
+            <button className="w-full flex items-center space-x-2 p-2 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition-colors">
+              <Settings size={16} />
+              <span className="text-sm">Settings</span>
+            </button>
           </div>
         </div>
+        
+        {/* Red accent line */}
+        <div className="absolute right-0 top-0 bottom-0 w-1 bg-red-500"></div>
       </div>
 
-      {/* Main Content */}
-      <div className="ml-64 flex-1 p-8">
-        <div className="max-w-4xl mx-auto">
-          {/* Profile Header */}
-          <div className="flex items-start space-x-8 mb-8">
-            {/* Profile Picture */}
-            <div className="flex-shrink-0">
-              <div className="w-32 h-32 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center text-4xl font-bold">
-                {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
+      {/* Main Content - Dashboard Overview */}
+      <div className="flex-1 bg-black p-6 ml-56">
+        <div className="max-w-5xl mx-auto">
+          {/* Dashboard Header */}
+          <div className="mb-8">
+            <h1 className="text-3xl font-semibold text-white mb-3">
+              Welcome to BlogSphere
+            </h1>
+            <p className="text-gray-400 text-lg">
+              Discover amazing content, explore different categories, and connect with creators
+            </p>
+          </div>
+
+          {/* Quick Access Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <div 
+              onClick={() => router.push("/restaurant")}
+              className="bg-gray-900 rounded-lg p-6 cursor-pointer hover:bg-gray-800 transition-colors"
+            >
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-12 h-12 bg-red-500 rounded-lg flex items-center justify-center">
+                  <Utensils size={24} className="text-white" />
+                </div>
+                <h3 className="text-xl font-semibold text-white">Restaurants</h3>
               </div>
+              <p className="text-gray-400 text-sm">Explore amazing dining experiences and food offers</p>
             </div>
 
-            {/* Profile Info */}
-            <div className="flex-1">
-              <div className="flex items-center space-x-4 mb-4">
-                <h1 className="text-2xl font-light">{user.name || 'User'}</h1>
-                <Button variant="outline" className="bg-gray-800 border-gray-600 text-white hover:bg-gray-700">
-                  <Edit3 size={16} className="mr-2" />
-                  Edit Profile
-                </Button>
-                <Button variant="outline" className="bg-gray-800 border-gray-600 text-white hover:bg-gray-700">
-                  <Settings size={16} />
-                </Button>
+            <div 
+              onClick={() => router.push("/fashion")}
+              className="bg-gray-900 rounded-lg p-6 cursor-pointer hover:bg-gray-800 transition-colors"
+            >
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center">
+                  <Shirt size={24} className="text-white" />
+                </div>
+                <h3 className="text-xl font-semibold text-white">Fashion</h3>
               </div>
+              <p className="text-gray-400 text-sm">Discover the latest trends and style inspiration</p>
+            </div>
 
-              {/* Stats */}
-              <div className="flex space-x-8 mb-4">
-                <div className="text-center">
-                  <span className="font-semibold">0</span>
-                  <div className="text-gray-400 text-sm">posts</div>
+            <div 
+              onClick={() => router.push("/travel")}
+              className="bg-gray-900 rounded-lg p-6 cursor-pointer hover:bg-gray-800 transition-colors"
+            >
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center">
+                  <Plane size={24} className="text-white" />
                 </div>
-                <div className="text-center">
-                  <span className="font-semibold">0</span>
-                  <div className="text-gray-400 text-sm">followers</div>
-                </div>
-                <div className="text-center">
-                  <span className="font-semibold">0</span>
-                  <div className="text-gray-400 text-sm">following</div>
-                </div>
+                <h3 className="text-xl font-semibold text-white">Travel</h3>
               </div>
+              <p className="text-gray-400 text-sm">Plan your next adventure with amazing travel deals</p>
+            </div>
 
-              {/* Bio */}
-              <div className="mb-4">
-                <div className="font-semibold">{user.name || 'User'}</div>
-                <div className="text-gray-400 text-sm">{user.email}</div>
-                <div className="text-gray-400 text-sm">Username: @{user.username}</div>
+            <div 
+              onClick={() => router.push("/gaming")}
+              className="bg-gray-900 rounded-lg p-6 cursor-pointer hover:bg-gray-800 transition-colors"
+            >
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center">
+                  <Gamepad2 size={24} className="text-white" />
+                </div>
+                <h3 className="text-xl font-semibold text-white">Gaming</h3>
               </div>
+              <p className="text-gray-400 text-sm">Level up with gaming events and tournaments</p>
+            </div>
+
+            <div 
+              onClick={() => router.push("/tech")}
+              className="bg-gray-900 rounded-lg p-6 cursor-pointer hover:bg-gray-800 transition-colors"
+            >
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-12 h-12 bg-indigo-500 rounded-lg flex items-center justify-center">
+                  <Smartphone size={24} className="text-white" />
+                </div>
+                <h3 className="text-xl font-semibold text-white">Tech</h3>
+              </div>
+              <p className="text-gray-400 text-sm">Stay ahead with cutting-edge technology solutions</p>
+            </div>
+
+            <div 
+              onClick={() => router.push("/music")}
+              className="bg-gray-900 rounded-lg p-6 cursor-pointer hover:bg-gray-800 transition-colors"
+            >
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-12 h-12 bg-pink-500 rounded-lg flex items-center justify-center">
+                  <Music size={24} className="text-white" />
+                </div>
+                <h3 className="text-xl font-semibold text-white">Music</h3>
+              </div>
+              <p className="text-gray-400 text-sm">Immerse yourself in the world of music and sound</p>
             </div>
           </div>
 
-          {/* Content Tabs */}
-          <div className="border-t border-gray-800">
-            <div className="flex justify-center space-x-8">
-              <button
-                onClick={() => setActiveTab('posts')}
-                className={`flex items-center space-x-2 py-4 border-t-2 ${
-                  activeTab === 'posts' ? 'border-white' : 'border-transparent'
-                }`}
-              >
-                <Grid3X3 size={16} />
-                <span className="text-sm font-medium">POSTS</span>
-              </button>
-              <button
-                onClick={() => setActiveTab('saved')}
-                className={`flex items-center space-x-2 py-4 border-t-2 ${
-                  activeTab === 'saved' ? 'border-white' : 'border-transparent'
-                }`}
-              >
-                <Bookmark size={16} />
-                <span className="text-sm font-medium">SAVED</span>
-              </button>
-              <button
-                onClick={() => setActiveTab('tagged')}
-                className={`flex items-center space-x-2 py-4 border-t-2 ${
-                  activeTab === 'tagged' ? 'border-white' : 'border-transparent'
-                }`}
-              >
-                <User size={16} />
-                <span className="text-sm font-medium">TAGGED</span>
-              </button>
+          {/* Recent Activity */}
+          <div className="bg-gray-900 rounded-lg p-6">
+            <h2 className="text-xl font-semibold text-white mb-4">Recent Activity</h2>
+            <div className="space-y-3">
+              <div className="flex items-center space-x-3 text-sm">
+                <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                <span className="text-gray-400">New restaurant added: Spice Garden in Bangalore</span>
+              </div>
+              <div className="flex items-center space-x-3 text-sm">
+                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                <span className="text-gray-400">Fashion collection updated with summer styles</span>
+              </div>
+              <div className="flex items-center space-x-3 text-sm">
+                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                <span className="text-gray-400">Travel package launched for Goa monsoon season</span>
+              </div>
             </div>
-          </div>
-
-          {/* Content Area */}
-          <div className="mt-8">
-            {activeTab === 'posts' && (
-              <div className="text-center py-16">
-                <div className="w-16 h-16 border-2 border-gray-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Camera size={32} className="text-gray-400" />
-                </div>
-                <h3 className="text-2xl font-light mb-2">Share Photos</h3>
-                <p className="text-gray-400">When you share photos, they will appear on your profile.</p>
-                <Button className="mt-4 bg-blue-500 hover:bg-blue-600">
-                  <Plus size={16} className="mr-2" />
-                  Create Post
-                </Button>
-              </div>
-            )}
-
-            {activeTab === 'saved' && (
-              <div className="text-center py-16">
-                <div className="w-16 h-16 border-2 border-gray-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Bookmark size={32} className="text-gray-400" />
-                </div>
-                <h3 className="text-2xl font-light mb-2">Save Photos</h3>
-                <p className="text-gray-400">Save photos and videos that you want to see again.</p>
-              </div>
-            )}
-
-            {activeTab === 'tagged' && (
-              <div className="text-center py-16">
-                <div className="w-16 h-16 border-2 border-gray-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <User size={32} className="text-gray-400" />
-                </div>
-                                 <h3 className="text-2xl font-light mb-2">Photos of You</h3>
-                 <p className="text-gray-400">When people tag you in photos, they&apos;ll appear here.</p>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Mobile Responsive */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-black border-t border-gray-800 p-2">
-        <div className="flex justify-around">
-          <Home size={24} className="text-white" />
-          <Search size={24} className="text-gray-400" />
-          <Plus size={24} className="text-gray-400" />
-          <Heart size={24} className="text-gray-400" />
-          <div className="w-6 h-6 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
-            <User size={16} className="text-white" />
           </div>
         </div>
       </div>
