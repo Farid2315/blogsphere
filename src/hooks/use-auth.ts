@@ -33,8 +33,8 @@ export function useAuth() {
           user: {
             id: user.id,
             email: user.email,
-            username: user.username || user.email.split('@')[0],
-            name: user.name || user.username || user.email.split('@')[0],
+            username: user.email.split('@')[0], // Generate username from email
+            name: user.name || user.email.split('@')[0],
             emailVerified: user.emailVerified || false,
             image: user.image || undefined,
           },
@@ -80,4 +80,4 @@ export function useAuth() {
     checkAuth,
     logout,
   };
-} 
+}

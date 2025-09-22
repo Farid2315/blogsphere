@@ -52,7 +52,7 @@ export default function LoginPage() {
     try {
       await authClient.signIn.social({
         provider: "google",
-        callbackURL: "/dashboard", // ✅ Ensure redirect happens correctly
+        callbackURL: "/restaurants", // ✅ Ensure redirect happens correctly
       });
       // No code below this line will execute, as the browser will redirect away
     } catch (error) {
@@ -74,7 +74,7 @@ export default function LoginPage() {
       if (!result.error) {
         // Wait a moment for the session to be established
         setTimeout(() => {
-          router.push("/dashboard");
+          router.push("/restaurants");
         }, 1000);
       } else {
         alert(result.error.message);
