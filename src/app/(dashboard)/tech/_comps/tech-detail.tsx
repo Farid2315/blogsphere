@@ -30,7 +30,7 @@ const timings = [
   "sunday: 11AM - 7PM",
 ]
 
-    export function TechDetail({ techId }: TechDetailProps) {
+    export function TechDetail({ }: TechDetailProps) {
   return (
     <div className="p-6 max-w-6xl mx-auto">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
