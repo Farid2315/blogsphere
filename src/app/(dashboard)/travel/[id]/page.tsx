@@ -1,16 +1,10 @@
-import { AppLayout } from "../../../../components/layout/app-layout"
+import { AppLayout } from "@/components/layout/app-layout"
 import { TravelDetail } from "../_comps/travel-detail"
 
-interface TravelPageProps {
-  params: {
-    id: string
-  }
-}
-
-export default function TravelPage({ params }: TravelPageProps) {
+export default function TravelPage() {
   return (
     <AppLayout title="Travel Destination">
-      <TravelDetail itemId={params.id} />
+      <TravelDetail />
     </AppLayout>
   )
 }

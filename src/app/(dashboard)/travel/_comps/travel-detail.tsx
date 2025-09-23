@@ -5,10 +5,6 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Heart, Share, Bookmark, Phone, Globe } from "lucide-react"
 import Image from "next/image"
 
-interface TravelDetailProps {
-  itemId: string
-}
-
 const offers = [
   "Early bird discount: Book 30 days in advance and save 25% on travel packages",
   "Group booking offer: Travel with 4+ people and get 15% off on accommodation",
@@ -30,7 +26,7 @@ const timings = [
   "sunday: 10AM - 6PM",
 ]
 
-export function TravelDetail({ itemId }: TravelDetailProps) {
+export function TravelDetail() {
   return (
     <div className="p-6 max-w-6xl mx-auto">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

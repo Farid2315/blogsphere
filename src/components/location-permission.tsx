@@ -55,7 +55,7 @@ export function LocationPermission({ onLocationUpdate, showCard = true }: Locati
     if (latitude !== null && longitude !== null && user) {
       updateUserLocation(latitude, longitude)
     }
-  }, [latitude, longitude, user]) // Removed updateUserLocation from dependencies to avoid circular reference
+  }, [latitude, longitude, user, updateUserLocation])
 
   const handleRequestLocation = () => {
     setUpdateStatus('idle')

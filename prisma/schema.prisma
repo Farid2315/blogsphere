@@ -8,61 +8,133 @@ generator client {
 }
 
 model User {
-  id        String     @id @default(uuid()) @map("_id")
-  email     String     @unique
-  username  String?
-  name      String?
-  password  String? // hashed password, null if OAuth only
-  createdAt DateTime   @default(now())
-  posts     Post[]     @relation("UserPosts")
-  comments  Comment[]  @relation("UserComments")
-  likes     Like[]     @relation("UserLikes")
-  bookmarks Bookmark[] @relation("UserBookmarks")
-  votes     Vote[]     @relation("UserVotes")
+  id                String     @id @default(uuid()) @map("_id")
+  email             String     @unique
+  username          String?
+  name              String?
+  password          String? // hashed password, null if OAuth only
+  createdAt         DateTime   @default(now())
+  posts             Post[]     @relation("UserPosts")
+  comments          Comment[]  @relation("UserComments")
+  likes             Like[]     @relation("UserLikes")
+  bookmarks         Bookmark[] @relation("UserBookmarks")
+  votes             Vote[]     @relation("UserVotes")
 
-  emailVerified Boolean @default(false)
-  image         String?
-  latitude      Float? // User's current latitude
-  longitude     Float? // User's current longitude
-  locationUpdatedAt DateTime? // When location was last updated
-  updatedAt     DateTime @default(now())
-  sessions      Session[]
-  accounts      Account[]
+  emailVerified     Boolean    @default(false)
+  image             String?
+
+  // User's current location
+  latitude          Float?
+  longitude         Float?
+  locationUpdatedAt DateTime?
+
+  updatedAt         DateTime   @default(now())
+
+  sessions          Session[]
+  accounts          Account[]
 
   @@map("users")
 }
 
+/* ------------------- POST MODEL ------------------- */
 model Post {
-  id        String     @id @default(auto()) @map("_id") @db.ObjectId
-  authorId  String
-  author    User       @relation(fields: [authorId], references: [id], name: "UserPosts")
-  title     String
-  content   String
-  domain    String // e.g. "food", "cloth", "trends", "tours", "random"
-  location  Location? // GeoJSON point for location-based feed
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  comments  Comment[]  @relation("PostComments")
-  likes     Like[]     @relation("PostLikes")
-  bookmarks Bookmark[] @relation("PostBookmarks")
-  votes     Vote[]     @relation("PostVotes")
+  id              String        @id @default(auto()) @map("_id") @db.ObjectId
+  authorId        String
+  author          User          @relation(fields: [authorId], references: [id], name: "UserPosts")
+
+  title           String        // Post name/title
+  content         String
+  domain          String        // e.g. "food", "cloth", "trends", "tours", "random"
+
+  // Location info
+  locationName    String        // e.g. "Koramangala, Bangalore"
+  location        Location?     // GeoJSON Point for precise coordinates
+
+  // Engagement
+  likesCount      Int           @default(0) // no of likes
+  sharesCount     Int           @default(0) // no of shares
+  rating          Float?        // average rating of the post/company
+
+  // Business details
+  companyWebsite  String?       // website link
+  promotionLink   String?       // promotional link
+  instagramHandle String?       // Instagram username
+  callNumber      String?       // phone number for direct call
+
+  // Branches (multiple addresses)
+  branches        BranchAddress[]
+
+  // Weekly timings
+  timings         WeeklyTiming?
+
+  // Offers
+  offers          Offer[]
+
+  // Media
+  images          String[]      // multiple image URLs
+
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  comments        Comment[]     @relation("PostComments")
+  likes           Like[]        @relation("PostLikes")
+  bookmarks       Bookmark[]    @relation("PostBookmarks")
+  votes           Vote[]        @relation("PostVotes")
 
   @@map("posts")
-  @@index([location]) // important for $geoNear queries
+  @@index([location])
 }
 
+/* ---------- BRANCH ADDRESSES ---------- */
+type BranchAddress {
+  name        String    // branch name or identifier
+  address     String
+  latitude    Float
+  longitude   Float
+}
+
+/* ---------- WEEKLY TIMINGS ---------- */
+type WeeklyTiming {
+  monday      String?
+  tuesday     String?
+  wednesday   String?
+  thursday    String?
+  friday      String?
+  saturday    String?
+  sunday      String?
+}
+
+/* ---------- OFFERS ---------- */
+type Offer {
+  title       String
+  description String
+  validTill   DateTime?
+  link        String?   // optional link to offer
+}
+
+/* ---------- GEOJSON LOCATION ---------- */
+type Location {
+  type        String   @default("Point") // Must always be "Point"
+  coordinates Float[]  // [longitude, latitude]
+}
+
+/* ------------------- COMMENT WITH RATING ------------------- */
 model Comment {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   postId    String   @db.ObjectId
   post      Post     @relation(fields: [postId], references: [id], name: "PostComments")
   authorId  String
   author    User     @relation(fields: [authorId], references: [id], name: "UserComments")
-  content   String
+
+  rating    Int      @default(0) // rating between 1 and 5
+  content   String   // actual comment text
+
   createdAt DateTime @default(now())
 
   @@map("comments")
 }
 
+/* ------------------- LIKE ------------------- */
 model Like {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   userId    String
@@ -74,6 +146,7 @@ model Like {
   @@map("likes")
 }
 
+/* ------------------- BOOKMARK ------------------- */
 model Bookmark {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   userId    String
@@ -85,25 +158,20 @@ model Bookmark {
   @@map("bookmarks")
 }
 
+/* ------------------- VOTE ------------------- */
 model Vote {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   userId    String
   user      User     @relation(fields: [userId], references: [id], name: "UserVotes")
   postId    String   @db.ObjectId
   post      Post     @relation(fields: [postId], references: [id], name: "PostVotes")
-  isValid   Boolean // true if offer/post is still valid
+  isValid   Boolean  // true if offer/post is still valid
   createdAt DateTime @default(now())
 
   @@map("votes")
 }
 
-/* ---------- GeoJSON Location ---------- */
-type Location {
-  type        String   @default("Point") // Must always be "Point"
-  coordinates Float[]  // [longitude, latitude] format
-}
-
-/* ---------- BetterAuth Models ---------- */
+/* ------------------- BETTERAUTH MODELS ------------------- */
 model Session {
   id                   String   @id @default(uuid()) @map("_id")
   expiresAt            DateTime

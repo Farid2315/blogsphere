@@ -2,11 +2,8 @@
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
+import Image from "next/image"
 import { Heart, Share, Bookmark, Phone, Globe } from "lucide-react"
-
-interface MusicDetailProps {
-  itemId: string
-}
 
 const offers = [
   "Concert special: Buy 2 tickets and get 1 free for selected music events and live performances",
@@ -29,7 +26,7 @@ const timings = [
   "sunday: 1PM - 8PM",
 ]
 
-export function MusicDetail({ itemId }: MusicDetailProps) {
+export function MusicDetail() {
   return (
     <div className="p-6 max-w-6xl mx-auto">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -37,10 +34,12 @@ export function MusicDetail({ itemId }: MusicDetailProps) {
         <div className="lg:col-span-2 space-y-6">
           {/* Music Image */}
           <div className="relative">
-            <img
+            <Image
               src="/music-store-with-instruments-and-audio-equipment.jpg"
               alt="Music Item"
               className="w-full h-64 md:h-80 object-cover rounded-lg"
+              width={800}
+              height={320}
             />
           </div>
 

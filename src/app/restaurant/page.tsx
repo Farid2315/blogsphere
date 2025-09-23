@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 
 export default function RestaurantPage() {
-  const { user, loading, authenticated, logout } = useAuth();
+  const { user, loading, authenticated } = useAuth();
   const router = useRouter();
   const [expandedCategory, setExpandedCategory] = useState('location');
 

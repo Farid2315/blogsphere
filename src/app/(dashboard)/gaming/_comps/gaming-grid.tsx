@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Bookmark } from "lucide-react"
@@ -58,7 +59,7 @@ export function GamingGrid() {
           <Link key={item.id} href={`/gaming/${item.id}`}>
             <Card className="group cursor-pointer overflow-hidden border-2 border-red-500/20 hover:border-red-500/40 transition-all duration-300 bg-card">
               <div className="relative">
-                <img src={item.image || "/placeholder.svg"} alt={item.name} className="w-full h-48 object-cover" />
+                <Image src={item.image || "/placeholder.svg"} alt={item.name} className="w-full h-48 object-cover" width={400} height={192} />
                 <Button
                   variant="ghost"
                   size="icon"

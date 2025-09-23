@@ -2,11 +2,8 @@
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
+import Image from "next/image"
 import { Heart, Share, Bookmark, Phone, Globe } from "lucide-react"
-
-interface GamingDetailProps {
-  itemId: string
-}
 
 const offers = [
   "Gaming bundle deal: Buy any console and get 3 games free with extended warranty",
@@ -29,7 +26,7 @@ const timings = [
   "sunday: 12PM - 9PM",
 ]
 
-export function GamingDetail({ itemId }: GamingDetailProps) {
+export function GamingDetail() {
   return (
     <div className="p-6 max-w-6xl mx-auto">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -37,7 +34,7 @@ export function GamingDetail({ itemId }: GamingDetailProps) {
         <div className="lg:col-span-2 space-y-6">
           {/* Gaming Image */}
           <div className="relative">
-            <img src="/gaming-setup.png" alt="Gaming Item" className="w-full h-64 md:h-80 object-cover rounded-lg" />
+            <Image src="/gaming-setup.png" alt="Gaming Item" className="w-full h-64 md:h-80 object-cover rounded-lg" width={800} height={320} />
           </div>
 
           {/* Offers Section */}
