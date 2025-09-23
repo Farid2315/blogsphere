@@ -16,7 +16,7 @@ export const auth = betterAuth({
   // Email/Password config
   emailAndPassword: {
     enabled: true,
-    signUp: async (data: Record<string, any>) => {
+    signUp: async (data: { email: string; password: string; name?: string; username?: string }) => {
       // The username is now provided by the user in the form
       // No need to generate it automatically
       return data;
@@ -28,7 +28,7 @@ export const auth = betterAuth({
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      profile: async (profile: Record<string, any>) => {
+      profile: async (profile: { email: string; name?: string; picture?: string; id: string }) => {
         // For OAuth users, we don't provide a username initially
         // They can set it later in their profile
         return {

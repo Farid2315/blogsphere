@@ -1,4 +1,3 @@
-
 datasource db {
   provider = "mongodb"
   url      = env("DATABASE_URL")
@@ -23,6 +22,9 @@ model User {
 
   emailVerified Boolean @default(false)
   image         String?
+  latitude      Float? // User's current latitude
+  longitude     Float? // User's current longitude
+  locationUpdatedAt DateTime? // When location was last updated
   updatedAt     DateTime @default(now())
   sessions      Session[]
   accounts      Account[]
@@ -37,7 +39,7 @@ model Post {
   title     String
   content   String
   domain    String // e.g. "food", "cloth", "trends", "tours", "random"
-  location  GeoPoint? // optional geo info for location-based feed
+  location  Location? // GeoJSON point for location-based feed
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   comments  Comment[]  @relation("PostComments")
@@ -46,6 +48,7 @@ model Post {
   votes     Vote[]     @relation("PostVotes")
 
   @@map("posts")
+  @@index([location]) // important for $geoNear queries
 }
 
 model Comment {
@@ -94,10 +97,10 @@ model Vote {
   @@map("votes")
 }
 
-// Embedded type for geo location
-type GeoPoint {
-  latitude  Float
-  longitude Float
+/* ---------- GeoJSON Location ---------- */
+type Location {
+  type        String   @default("Point") // Must always be "Point"
+  coordinates Float[]  // [longitude, latitude] format
 }
 
 /* ---------- BetterAuth Models ---------- */

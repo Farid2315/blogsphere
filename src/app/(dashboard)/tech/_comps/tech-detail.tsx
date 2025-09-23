@@ -41,6 +41,8 @@ const timings = [
             <Image
               src="/modern-tech-store-with-laptops-and-gadgets.jpg"
               alt="Tech Product"
+              width={800}
+              height={320}
               className="w-full h-64 md:h-80 object-cover rounded-lg"
             />
           </div>

@@ -3,6 +3,8 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { LocationPermission } from "@/components/location-permission"
+import Image from "next/image"
 
 const featuredImages = ["/fashion-model-portrait.png", "/business-woman-professional.jpg", "/casual-lifestyle-photo.jpg"]
 
@@ -42,10 +44,13 @@ export function ProfileContent() {
             <div className="grid grid-cols-3 gap-4">
               {featuredImages.map((image, index) => (
                 <div key={index} className="aspect-square rounded-lg overflow-hidden">
-                  <img
+                  <Image
                     src={image || "/placeholder.svg"}
                     alt={`Featured ${index + 1}`}
                     className="w-full h-full object-cover"
+                    width={200}
+                    height={200}
+                    priority
                   />
                 </div>
               ))}
@@ -74,6 +79,9 @@ export function ProfileContent() {
 
         {/* Stats Sidebar */}
         <div className="space-y-6">
+          {/* Location Permission */}
+          <LocationPermission />
+          
           <div className="text-center space-y-4">
             <div>
               <div className="text-2xl font-bold text-foreground">42</div>
