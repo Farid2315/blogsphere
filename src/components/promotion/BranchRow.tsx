@@ -5,7 +5,7 @@ import React from "react";
 type Props = {
   index: number;
   branch: { name: string; address: string; latitude?: number; longitude?: number };
-  onChange: (i: number, b: { name: string; address: string; latitude?: number; longitude?: number }) => void;
+  onChange: (i: number, b: any) => void;
   onRemove: (i: number) => void;
 };
 
@@ -36,8 +36,8 @@ export default function BranchRow({ index, branch, onChange, onRemove }: Props) 
           onChange={(e) =>
             onChange(index, { ...branch, latitude: parseFloat(e.target.value || "0") })
           }
-          placeholder="Latitude"
-          className="w-1/2 p-2 border rounded"
+          placeholder="Latitude (optional)"
+          className="w-1/2 p-2 border rounded text-sm"
         />
         <input
           type="number"
@@ -45,8 +45,8 @@ export default function BranchRow({ index, branch, onChange, onRemove }: Props) 
           onChange={(e) =>
             onChange(index, { ...branch, longitude: parseFloat(e.target.value || "0") })
           }
-          placeholder="Longitude"
-          className="w-1/2 p-2 border rounded"
+          placeholder="Longitude (optional)"
+          className="w-1/2 p-2 border rounded text-sm"
         />
       </div>
     </div>

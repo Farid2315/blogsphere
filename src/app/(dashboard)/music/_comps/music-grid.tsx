@@ -59,7 +59,7 @@ export function MusicGrid() {
           <Link key={item.id} href={`/music/${item.id}`}>
             <Card className="group cursor-pointer overflow-hidden border-2 border-red-500/20 hover:border-red-500/40 transition-all duration-300 bg-card">
               <div className="relative">
-                <Image src={item.image || "/placeholder.svg"} alt={item.name} className="w-full h-48 object-cover" width={400} height={192} />
+                <img src={item.image || "/placeholder.svg"} alt={item.name} className="w-full h-48 object-cover" />
                 <Button
                   variant="ghost"
                   size="icon"

@@ -1,7 +1,13 @@
 import { AppLayout } from "@/components/layout/app-layout"
 import { GamingDetail } from "../_comps/gaming-detail"
 
-export default function GamingPage() {
+interface GamingPageProps {
+  params: {
+    id: string
+  }
+}
+
+export default function GamingPage({ params }: GamingPageProps) {
   return (
     <AppLayout title="Gaming Item">
       <GamingDetail />

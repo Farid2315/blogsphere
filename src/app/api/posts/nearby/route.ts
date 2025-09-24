@@ -10,23 +10,24 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Missing location" }, { status: 400 });
     }
 
-    // Use raw MongoDB query for geospatial operations
-    const nearbyPosts = await prisma.$runCommandRaw({
-      aggregate: "Post",
+    // Use raw MongoDB query for geospatial search since Prisma doesn't support $nearSphere directly
+    const nearbyPosts = await prisma.post.aggregateRaw({
       pipeline: [
         {
           $geoNear: {
             near: {
               type: "Point",
-              coordinates: [longitude, latitude],
+              coordinates: [longitude, latitude]
             },
             distanceField: "distance",
             maxDistance: radius,
             spherical: true,
-          },
-        },
-      ],
-      cursor: {},
+            query: {
+              location: { $exists: true }
+            }
+          }
+        }
+      ]
     });
 
     return NextResponse.json({ nearbyPosts });

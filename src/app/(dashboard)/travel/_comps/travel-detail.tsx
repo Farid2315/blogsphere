@@ -5,6 +5,10 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Heart, Share, Bookmark, Phone, Globe } from "lucide-react"
 import Image from "next/image"
 
+interface TravelDetailProps {
+  itemId: string
+}
+
 const offers = [
   "Early bird discount: Book 30 days in advance and save 25% on travel packages",
   "Group booking offer: Travel with 4+ people and get 15% off on accommodation",

@@ -9,7 +9,7 @@ interface RestaurantPageProps {
 
 export default function RestaurantPage({ params }: RestaurantPageProps) {
   return (
-    <AppLayout title="Restaurant Name">
+    <AppLayout title="Restaurant Details">
       <RestaurantDetail restaurantId={params.id} />
     </AppLayout>
   )

@@ -1,5 +1,11 @@
-import { AppLayout } from "@/components/layout/app-layout"
+import { AppLayout } from "../../../../components/layout/app-layout"
 import { TravelDetail } from "../_comps/travel-detail"
+
+type Props = {
+  params: {
+    id: string
+  }
+}
 
 export default function TravelPage() {
   return (

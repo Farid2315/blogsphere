@@ -28,7 +28,7 @@ export const auth = betterAuth({
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      profile: async (profile: { email: string; name?: string; picture?: string; id: string }) => {
+      profile: async (profile: Record<string, any>) => {
         // For OAuth users, we don't provide a username initially
         // They can set it later in their profile
         return {

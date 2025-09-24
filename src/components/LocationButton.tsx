@@ -9,7 +9,7 @@ export default function LocationButton({ onGot }: Props) {
     if (!navigator.geolocation) return alert("Geolocation not supported");
     navigator.geolocation.getCurrentPosition(
       (pos) => onGot([pos.coords.longitude, pos.coords.latitude]),
-      () => alert("Location denied or unavailable")
+      (err) => alert("Location denied or unavailable")
     );
   };
 

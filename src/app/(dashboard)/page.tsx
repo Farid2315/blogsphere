@@ -1,5 +1,5 @@
 import { AppLayout } from "../../components/layout/app-layout"
-import { RestaurantGrid } from "./restaurants/_comps/restaurant-grid"
+import { RestaurantGrid } from "../../components/restaurant-grid"
 
 export default function DashboardPage() {
   return (

@@ -21,7 +21,7 @@ export default function ImageListInput({ value = [], onChange }: { value?: strin
       <ul>
         {value.map((u, i) => (
           <li key={i} className="mb-2 flex items-center gap-3">
-            <Image src={u} alt={`img-${i}`} width={64} height={64} className="w-16 h-16 object-cover rounded" />
+            <img src={u} alt={`img-${i}`} className="w-16 h-16 object-cover rounded" />
             <div className="flex-1">{u}</div>
             <button onClick={() => remove(i)} className="text-red-500">Remove</button>
           </li>

@@ -5,6 +5,10 @@ import { Card, CardContent } from "@/components/ui/card"
 import Image from "next/image"
 import { Heart, Share, Bookmark, Phone, Globe } from "lucide-react"
 
+interface MusicDetailProps {
+  itemId: string
+}
+
 const offers = [
   "Concert special: Buy 2 tickets and get 1 free for selected music events and live performances",
   "Music gear discount: Get 30% off on all musical instruments and audio equipment this month",

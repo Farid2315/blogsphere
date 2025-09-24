@@ -1,10 +1,10 @@
 import { AppLayout } from "@/components/layout/app-layout"
-import { CreatePromotionForm } from "./_comps/create-promotion-form"
+import { CreatePromotionPage } from "./_comps/create"
 
-export default function CreatePromotionPage() {
+export default function CreatePromotionPageWrapper() {
   return (
     <AppLayout title="Create A Promotion">
-      <CreatePromotionForm />
+      <CreatePromotionPage />
     </AppLayout>
   )
 }

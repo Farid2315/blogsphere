@@ -7,13 +7,14 @@ type Body = {
   title: string;
   content: string;
   domain: string;
+  address?: string; // New address field
   locationName: string;
   location?: { longitude: number; latitude: number } | null;
   branches?: {
     name: string;
     address: string;
-    latitude: number;
-    longitude: number;
+    latitude?: number;
+    longitude?: number;
   }[];
   timings?: {
     monday?: string; tuesday?: string; wednesday?: string;
@@ -25,6 +26,10 @@ type Body = {
   promotionLink?: string | null;
   instagramHandle?: string | null;
   callNumber?: string | null;
+  startDate?: string | null;
+  endDate?: string | null;
+  startTime?: string | null;
+  endTime?: string | null;
 };
 
 export async function POST(req: Request) {
@@ -45,8 +50,8 @@ export async function POST(req: Request) {
     const branches = (body.branches || []).map((b) => ({
       name: b.name,
       address: b.address,
-      latitude: b.latitude,
-      longitude: b.longitude,
+      latitude: b.latitude ?? 0, // provide default value if missing
+      longitude: b.longitude ?? 0, // provide default value if missing
     }));
 
     const post = await prisma.post.create({
@@ -55,6 +60,7 @@ export async function POST(req: Request) {
         title: body.title,
         content: body.content ?? "",
         domain: body.domain,
+        address: body.address ?? null, // Include address field
         locationName: body.locationName,
         location: locationGeo as { type: string; coordinates: number[] }, // prisma composite type -> MongoDB doc
         likesCount: 0,
@@ -66,8 +72,15 @@ export async function POST(req: Request) {
         callNumber: body.callNumber,
         branches,
         timings: body.timings ?? undefined,
-        offers: body.offers ?? undefined,
+        offers: (body.offers || []).map(offer => ({
+          title: offer.title,
+          description: offer.description,
+          validTill: offer.validTill ? new Date(offer.validTill) : undefined,
+          link: offer.link,
+        })),
         images: body.images ?? [],
+        // Note: startDate, endDate, startTime, endTime are not stored in the database schema
+        // They are accepted in the API but not persisted
       },
     });
 

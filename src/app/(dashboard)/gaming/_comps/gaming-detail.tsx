@@ -5,6 +5,10 @@ import { Card, CardContent } from "@/components/ui/card"
 import Image from "next/image"
 import { Heart, Share, Bookmark, Phone, Globe } from "lucide-react"
 
+interface GamingDetailProps {
+  itemId: string
+}
+
 const offers = [
   "Gaming bundle deal: Buy any console and get 3 games free with extended warranty",
   "Pre-order special: Reserve upcoming games and save 20% with exclusive in-game content",

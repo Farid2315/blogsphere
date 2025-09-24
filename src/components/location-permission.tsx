@@ -55,7 +55,7 @@ export function LocationPermission({ onLocationUpdate, showCard = true }: Locati
     if (latitude !== null && longitude !== null && user) {
       updateUserLocation(latitude, longitude)
     }
-  }, [latitude, longitude, user, updateUserLocation])
+  }, [latitude, longitude, user]) // Removed updateUserLocation from dependencies to avoid circular reference
 
   const handleRequestLocation = () => {
     setUpdateStatus('idle')
@@ -105,7 +105,7 @@ export function LocationPermission({ onLocationUpdate, showCard = true }: Locati
         <Alert>
           <CheckCircle className="h-4 w-4" />
           <AlertDescription>
-            Location updated: {latitude.toFixed(6)}, {longitude.toFixed(6)}
+            Location updated successfully
           </AlertDescription>
         </Alert>
       )}

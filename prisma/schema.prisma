@@ -46,7 +46,7 @@ model Post {
   content         String
   domain          String        // e.g. "food", "cloth", "trends", "tours", "random"
 
-  // Location info
+  address         String?       // Human-readable address (e.g. "123 Main St, Koramangala, Bangalore")
   locationName    String        // e.g. "Koramangala, Bangalore"
   location        Location?     // GeoJSON Point for precise coordinates
 
