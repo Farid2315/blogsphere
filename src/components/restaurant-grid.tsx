@@ -3,10 +3,12 @@
 import Link from "next/link"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Bookmark, Star } from "lucide-react"
+import { Bookmark, Star, MapPin } from "lucide-react"
 import Image from "next/image"
 import { useEffect, useState } from "react"
 import { convertCoordinateStringToAddress } from "@/utils/coordinate-converter"
+import { useGeolocation } from "@/hooks/use-geolocation"
+import { formatDistance } from "@/utils/distance"
 
 interface Restaurant {
   id: string
@@ -43,6 +45,7 @@ interface Restaurant {
     sunday?: string
   }
   createdAt: string
+  distance?: number
   author: {
     id: string
     name?: string
@@ -54,13 +57,29 @@ export function RestaurantGrid() {
   const [restaurants, setRestaurants] = useState<Restaurant[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [addressCache, setAddressCache] = useState<{ [key: string]: string }>({})
+// Removed unused addressCache state
+  const { latitude, longitude, getCurrentPosition } = useGeolocation()
 
   useEffect(() => {
     const fetchRestaurants = async () => {
       try {
         setLoading(true)
-        const response = await fetch('/api/restaurants')
+        
+        // Build API URL with location parameters if available
+        let apiUrl = '/api/restaurants'
+        const params = new URLSearchParams()
+        
+        if (latitude && longitude) {
+          params.append('latitude', latitude.toString())
+          params.append('longitude', longitude.toString())
+          params.append('radius', '100000') // 100km radius in meters
+        }
+        
+        if (params.toString()) {
+          apiUrl += `?${params.toString()}`
+        }
+        
+        const response = await fetch(apiUrl)
         const data = await response.json()
         
         if (data.success) {
@@ -80,7 +99,7 @@ export function RestaurantGrid() {
               }
             }
           }
-          setAddressCache(newAddressCache)
+// Remove setAddressCache since it's no longer used
         } else {
           setError(data.error || 'Failed to fetch restaurants')
         }
@@ -93,7 +112,7 @@ export function RestaurantGrid() {
     }
 
     fetchRestaurants()
-  }, [])
+  }, [latitude, longitude])
 
   if (loading) {
     return (
@@ -142,10 +161,29 @@ export function RestaurantGrid() {
   }
   return (
     <div className="p-3 sm:p-4 lg:p-6">
+      {!latitude && !longitude && (
+        <div className="mb-6 p-4 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-medium text-gray-800 dark:text-gray-100 mb-1">Find nearby restaurants</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Allow location access to see restaurants sorted by distance</p>
+            </div>
+            <Button 
+              onClick={getCurrentPosition}
+              variant="outline"
+              size="sm"
+              className="border-gray-400 dark:border-gray-600 text-gray-700 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
+            >
+              <MapPin className="h-4 w-4 mr-2" />
+              Enable Location
+            </Button>
+          </div>
+        </div>
+      )}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
         {restaurants.map((restaurant) => (
           <Link key={restaurant.id} href={`/restaurants/${restaurant.id}`}>
-            <Card className="group cursor-pointer overflow-hidden border-2 border-red-500/20 hover:border-red-500/40 transition-all duration-300 bg-card">
+            <Card className="group cursor-pointer overflow-hidden border-2 border-gray-400/60 hover:border-gray-500/80 transition-all duration-300 bg-card">
               <div className="relative">
                 <Image
                   src={restaurant.images[0] || "/placeholder.svg"}
@@ -171,9 +209,14 @@ export function RestaurantGrid() {
                 <div className="flex justify-between items-start mb-2">
                   <div className="min-w-0 flex-1">
                     <h3 className="font-semibold text-foreground text-sm sm:text-base truncate">{restaurant.title}</h3>
-                    <p className="text-xs sm:text-sm text-muted-foreground truncate">
-                      {restaurant.address || addressCache[restaurant.id] || restaurant.locationName}
-                    </p>
+                    <div className="flex items-center gap-2">
+                      {restaurant.distance !== undefined && (
+                        <div className="flex items-center gap-1 text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded-full shrink-0">
+                          <MapPin className="h-3 w-3" />
+                          <span>{formatDistance(restaurant.distance)}</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
                   <div className="text-xs text-muted-foreground ml-2 flex items-center gap-1">
                     {restaurant.rating && restaurant.rating > 0 && (
@@ -203,7 +246,7 @@ export function RestaurantGrid() {
                 <div className="flex flex-col xs:flex-row gap-2">
                   <Button
                     size="default"
-                    className="flex-1 bg-red-600 hover:bg-red-700 text-white text-sm py-2.5"
+                    className="flex-1 bg-gray-700 hover:bg-gray-800 text-white text-sm py-2.5"
                     onClick={(e) => {
                       e.preventDefault()
                       e.stopPropagation()
@@ -217,7 +260,7 @@ export function RestaurantGrid() {
                   <Button
                     size="default"
                     variant="outline"
-                    className="flex-1 border-red-500 text-red-500 hover:bg-red-50 dark:hover:bg-red-950 text-sm py-2.5"
+                    className="flex-1 border-gray-500 text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 dark:text-white text-sm py-2.5"
                     onClick={(e) => {
                       e.preventDefault()
                       e.stopPropagation()

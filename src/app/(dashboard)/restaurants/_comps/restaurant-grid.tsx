@@ -57,7 +57,7 @@ export function RestaurantGrid() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
         {restaurants.map((restaurant) => (
           <Link key={restaurant.id} href={`/restaurant/${restaurant.id}`}>
-            <Card className="group cursor-pointer overflow-hidden border-2 border-red-500/20 hover:border-red-500/40 transition-all duration-300 bg-card">
+            <Card className="group cursor-pointer overflow-hidden border-2 border-gray-500/20 hover:border-gray-500/40 transition-all duration-300 bg-card">
               <div className="relative">
                 <Image
                   src={restaurant.image || "/placeholder.svg"}

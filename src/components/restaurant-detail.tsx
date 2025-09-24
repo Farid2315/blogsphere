@@ -128,9 +128,9 @@ export function RestaurantDetail({ restaurantId }: RestaurantDetailProps) {
   if (error) {
     return (
       <div className="p-6 max-w-6xl mx-auto">
-        <Card className="border-red-200 bg-red-50 dark:bg-red-950/20">
+        <Card className="border-gray-200 bg-gray-50 dark:bg-gray-950/20">
           <CardContent className="p-6 text-center">
-            <p className="text-red-600 dark:text-red-400">Error: {error}</p>
+            <p className="text-gray-600 dark:text-gray-400">Error: {error}</p>
             <Button 
               onClick={() => window.location.reload()} 
               className="mt-4"
@@ -200,12 +200,12 @@ export function RestaurantDetail({ restaurantId }: RestaurantDetailProps) {
               <h2 className="text-xl font-semibold text-foreground mb-4">Current Offers</h2>
               <div className="space-y-3">
                 {restaurant.offers.map((offer, index) => (
-                  <Card key={index} className="border-l-4 border-l-red-500 bg-card">
+                  <Card key={index} className="border-l-4 border-l-gray-500 bg-card">
                     <CardContent className="p-4">
                       <h3 className="font-medium text-foreground mb-1">{offer.title}</h3>
                       <p className="text-sm text-muted-foreground mb-2">{offer.description}</p>
                       {offer.validTill && (
-                        <p className="text-xs text-red-600">Valid till: {new Date(offer.validTill).toLocaleDateString()}</p>
+                        <p className="text-xs text-gray-600">Valid till: {new Date(offer.validTill).toLocaleDateString()}</p>
                       )}
                     </CardContent>
                   </Card>
@@ -220,7 +220,7 @@ export function RestaurantDetail({ restaurantId }: RestaurantDetailProps) {
             {restaurant.promotionLink && (
               <Button 
                 variant="link" 
-                className="text-red-500 hover:text-red-600 p-0"
+                className="text-gray-500 hover:text-gray-600 p-0"
                 onClick={() => window.open(restaurant.promotionLink, '_blank')}
               >
                 Visit the promotion 🔗
@@ -233,7 +233,7 @@ export function RestaurantDetail({ restaurantId }: RestaurantDetailProps) {
             {restaurant.callNumber && (
               <Button 
                 size="lg" 
-                className="bg-red-600 hover:bg-red-700 text-white px-8 py-3"
+                className="bg-gray-600 hover:bg-gray-700 text-white px-8 py-3"
                 onClick={() => window.open(`tel:${restaurant.callNumber}`, '_self')}
               >
                 <Phone className="mr-2 h-5 w-5" />
@@ -244,7 +244,7 @@ export function RestaurantDetail({ restaurantId }: RestaurantDetailProps) {
               <Button
                 size="lg"
                 variant="outline"
-                className="border-red-500 text-red-500 hover:bg-red-50 dark:hover:bg-red-950 bg-transparent px-8 py-3"
+                className="border-gray-500 text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-950 dark:text-white bg-transparent px-8 py-3"
                 onClick={() => window.open(restaurant.companyWebsite || restaurant.promotionLink, '_blank')}
               >
                 <Globe className="mr-2 h-5 w-5" />
@@ -261,20 +261,20 @@ export function RestaurantDetail({ restaurantId }: RestaurantDetailProps) {
             {restaurant.instagramHandle && (
               <Button 
                 className="w-full bg-secondary hover:bg-secondary/80 text-secondary-foreground"
-                onClick={() => window.open(`https://instagram.com/${restaurant.instagramHandle.replace('@', '')}`, '_blank')}
+                onClick={() => restaurant.instagramHandle && window.open(`https://instagram.com/${restaurant.instagramHandle.replace('@', '')}`, '_blank')}
               >
                 {restaurant.instagramHandle}
               </Button>
             )}
-            <Button className="w-full bg-red-600 hover:bg-red-700 text-white">
+            <Button className="w-full bg-gray-600 hover:bg-gray-700 text-white">
               <Heart className="mr-2 h-4 w-4" />
               Like ({restaurant.likesCount})
             </Button>
-            <Button className="w-full bg-red-600 hover:bg-red-700 text-white">
+            <Button className="w-full bg-gray-600 hover:bg-gray-700 text-white">
               <Share className="mr-2 h-4 w-4" />
               Share
             </Button>
-            <Button className="w-full bg-red-600 hover:bg-red-700 text-white">
+            <Button className="w-full bg-gray-600 hover:bg-gray-700 text-white">
               <Bookmark className="mr-2 h-4 w-4" />
               Save
             </Button>
@@ -288,7 +288,7 @@ export function RestaurantDetail({ restaurantId }: RestaurantDetailProps) {
               </h3>
               <div className="space-y-3">
                 {restaurant.branches.map((branch, index) => (
-                  <Card key={index} className="border-l-4 border-l-red-500 bg-card">
+                  <Card key={index} className="border-l-4 border-l-gray-500 bg-card">
                     <CardContent className="p-3">
                       <h4 className="font-medium text-foreground text-sm mb-1">{branch.name}</h4>
                       <p className="text-sm text-muted-foreground mb-2">{branch.address}</p>

@@ -39,15 +39,13 @@ export async function GET(request: NextRequest) {
       const minLng = lng - lngDelta
       const maxLng = lng + lngDelta
 
-      // Use aggregation to filter by location bounds
+      // Use aggregation to get all restaurants and calculate distance
       const nearbyRestaurants = await prisma.post.aggregateRaw({
         pipeline: [
           {
             $match: {
               domain: "food",
-              location: { $exists: true },
-              "location.coordinates.1": { $gte: minLat, $lte: maxLat },
-              "location.coordinates.0": { $gte: minLng, $lte: maxLng }
+              location: { $exists: true }
             }
           },
           {
@@ -94,11 +92,6 @@ export async function GET(request: NextRequest) {
             }
           },
           {
-            $match: {
-              distance: { $lte: radius }
-            }
-          },
-          {
             $sort: { distance: 1 }
           },
           {
@@ -131,15 +124,13 @@ export async function GET(request: NextRequest) {
         ]
       })
 
-      // Get total count for nearby restaurants
+      // Get total count for all restaurants
       const totalCountResult = await prisma.post.aggregateRaw({
         pipeline: [
           {
             $match: {
               domain: "food",
-              location: { $exists: true },
-              "location.coordinates.1": { $gte: minLat, $lte: maxLat },
-              "location.coordinates.0": { $gte: minLng, $lte: maxLng }
+              location: { $exists: true }
             }
           },
           {
@@ -168,11 +159,6 @@ export async function GET(request: NextRequest) {
                   }
                 ]
               }
-            }
-          },
-          {
-            $match: {
-              distance: { $lte: radius }
             }
           },
           { $count: "total" }
