@@ -288,10 +288,15 @@ export function RestaurantDetail({ restaurantId }: RestaurantDetailProps) {
               </h3>
               <div className="space-y-3">
                 {restaurant.branches.map((branch, index) => (
-                  <Card key={index} className="border-l-4 border-l-gray-500 bg-card">
+                  <Card key={index} className="border-l-4 border-l-gray-500 bg-card cursor-pointer hover:bg-muted/50 transition-colors"
+                        onClick={() => {
+                          const query = encodeURIComponent(branch.address);
+                          const url = `https://www.google.com/maps/search/?api=1&query=${query}`;
+                          window.open(url, '_blank');
+                        }}>
                     <CardContent className="p-3">
                       <h4 className="font-medium text-foreground text-sm mb-1">{branch.name}</h4>
-                      <p className="text-sm text-muted-foreground mb-2">{branch.address}</p>
+                      <p className="text-sm text-muted-foreground mb-2 hover:text-foreground transition-colors">{branch.address}</p>
                       {branch.latitude && branch.longitude && (
                         <AddressDisplay 
                           latitude={branch.latitude} 
@@ -300,6 +305,7 @@ export function RestaurantDetail({ restaurantId }: RestaurantDetailProps) {
                           shortFormat={true}
                         />
                       )}
+                      <p className="text-xs text-muted-foreground mt-2 opacity-70">Click to open in Google Maps</p>
                     </CardContent>
                   </Card>
                 ))}
