@@ -55,7 +55,7 @@ export function sortByDistance<T>(
   userLocation: Coordinates,
   getCoordinates: (item: T) => Coordinates | null
 ): (T & { distance?: number; formattedDistance?: string })[] {
-  return items
+  const itemsWithDistance: (T & { distance?: number; formattedDistance?: string })[] = items
     .map(item => {
       const coords = getCoordinates(item);
       if (!coords) {
@@ -68,7 +68,9 @@ export function sortByDistance<T>(
         distance,
         formattedDistance: formatDistance(distance)
       };
-    })
+    });
+
+  return itemsWithDistance
     .sort((a, b) => {
       // Items with distance come first, sorted by distance
       if (a.distance !== undefined && b.distance !== undefined) {

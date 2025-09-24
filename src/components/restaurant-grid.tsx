@@ -184,7 +184,7 @@ export function RestaurantGrid() {
         {restaurants.map((restaurant) => (
           <Link key={restaurant.id} href={`/restaurants/${restaurant.id}`}>
             <Card className="group cursor-pointer overflow-hidden border-2 border-gray-400/60 hover:border-gray-500/80 transition-all duration-300 bg-card">
-              <div className="relative">
+              <div className="relative px-2">
                 <Image
                   src={restaurant.images[0] || "/placeholder.svg"}
                   alt={restaurant.title}
@@ -264,8 +264,11 @@ export function RestaurantGrid() {
                     onClick={(e) => {
                       e.preventDefault()
                       e.stopPropagation()
-                      if (restaurant.promotionLink || restaurant.companyWebsite) {
-                        window.open(restaurant.promotionLink || restaurant.companyWebsite, '_blank')
+                      // Open Google Maps with the restaurant address
+                      const address = restaurant.address || restaurant.locationName
+                      if (address) {
+                        const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`
+                        window.open(mapsUrl, '_blank')
                       }
                     }}
                   >

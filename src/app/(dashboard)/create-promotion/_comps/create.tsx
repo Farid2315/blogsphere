@@ -1,15 +1,17 @@
 // src/app/promotions/create/page.tsx
 "use client";
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import LocationButton from "@/components/LocationButton";
 import BranchRow from "@/components/promotion/BranchRow";
 import OfferRow from "@/components/promotion/OfferRow";
 import ImageListInput from "@/components/promotion/ImageListInput";
-import { Upload, Calendar, Clock, Plus, Eye, EyeOff, CalendarIcon } from "lucide-react";
+import { Upload, Calendar, Clock, Plus, Eye, EyeOff, CalendarIcon, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 
@@ -17,6 +19,7 @@ type Branch = { name: string; address: string; latitude?: number; longitude?: nu
 type Offer = { title: string; description: string; validTill?: string; link?: string };
 
 export function CreatePromotionPage() {
+  const router = useRouter();
   const [title, setTitle] = useState("");
   const [domain, setDomain] = useState("food");
   const [content, setContent] = useState("");
@@ -50,6 +53,7 @@ export function CreatePromotionPage() {
   // preview mode
   const [preview, setPreview] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
 
   const updateBranch = (i: number, b: Branch) => setBranches((s) => s.map((x, idx) => (idx === i ? b : x)));
   const addBranch = () => setBranches((s) => [...s, { name: "", address: "", latitude: undefined, longitude: undefined }]);
@@ -101,7 +105,7 @@ export function CreatePromotionPage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error || "Create failed");
-      alert("Created post!");
+      setShowSuccessDialog(true);
       console.log("created:", data.post);
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : String(err);
@@ -587,6 +591,36 @@ export function CreatePromotionPage() {
           </div>
         )}
       </div>
+
+      {/* Success Dialog */}
+      <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <div className="flex items-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/20">
+                <CheckCircle className="h-6 w-6 text-green-600 dark:text-green-400" />
+              </div>
+              <div>
+                <DialogTitle className="text-lg font-semibold">Post Created Successfully!</DialogTitle>
+                <DialogDescription className="text-sm text-muted-foreground">
+                  Your promotion has been created and is now live.
+                </DialogDescription>
+              </div>
+            </div>
+          </DialogHeader>
+          <DialogFooter>
+            <Button 
+              onClick={() => {
+                setShowSuccessDialog(false);
+                router.push('/profile');
+              }}
+              className="w-full"
+            >
+              Go to Profile
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

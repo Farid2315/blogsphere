@@ -58,7 +58,7 @@ export function FashionGrid() {
         {fashionItems.map((item) => (
           <Link key={item.id} href={`/fashion/${item.id}`}>
             <Card className="group cursor-pointer overflow-hidden border-2 border-red-500/20 hover:border-red-500/40 transition-all duration-300 bg-card">
-              <div className="relative">
+              <div className="relative px-2">
                 <Image 
                   src={item.image || "/placeholder.svg"} 
                   alt={item.name} 
