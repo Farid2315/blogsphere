@@ -49,16 +49,16 @@ export function TechDetail({ techId }: TechDetailProps) {
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-4">
-            <Smartphone className="h-8 w-8 text-blue-400" />
-            <h1 className="text-4xl font-bold text-white">Tech Store #{techId}</h1>
+            <Smartphone className="h-8 w-8 text-primary" />
+            <h1 className="text-4xl font-bold text-foreground">Tech Store #{techId}</h1>
           </div>
-          <div className="flex items-center gap-4 text-gray-300">
+          <div className="flex items-center gap-4 text-foreground">
             <div className="flex items-center gap-1">
-              <Star className="h-5 w-5 text-yellow-400 fill-current" />
+              <Star className="h-5 w-5 text-accent fill-current" />
               <span>4.8 (2.1k reviews)</span>
             </div>
             <div className="flex items-center gap-1">
-              <MapPin className="h-5 w-5 text-red-400" />
+              <MapPin className="h-5 w-5 text-destructive" />
               <span>Tech District, Downtown</span>
             </div>
           </div>
@@ -68,30 +68,30 @@ export function TechDetail({ techId }: TechDetailProps) {
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
             {/* Hero Image */}
-            <Card className="bg-gray-800/50 border-gray-700">
+            <Card className="bg-card/50 border-border">
               <CardContent className="p-0">
-                <div className="aspect-video bg-gradient-to-r from-blue-600 to-purple-600 rounded-t-lg flex items-center justify-center">
-                  <div className="text-center text-white">
+                <div className="aspect-video bg-gradient-to-r from-primary to-secondary rounded-t-lg flex items-center justify-center">
+                  <div className="text-center text-primary-foreground">
                     <Cpu className="h-16 w-16 mx-auto mb-4" />
                     <h3 className="text-2xl font-bold">Latest Tech Collection</h3>
-                    <p className="text-blue-200">Smartphones, Laptops, Gaming & More</p>
+                    <p className="text-primary-foreground/80">Smartphones, Laptops, Gaming & More</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
             {/* Current Offers */}
-            <Card className="bg-gray-800/50 border-gray-700">
+            <Card className="bg-card/50 border-border">
               <CardContent className="p-6">
-                <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
-                  <Smartphone className="h-5 w-5 text-blue-400" />
+                <h3 className="text-xl font-semibold text-foreground mb-4 flex items-center gap-2">
+                  <Smartphone className="h-5 w-5 text-primary" />
                   Current Tech Offers
                 </h3>
                 <div className="grid gap-3">
                   {offers.map((offer, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 bg-gray-700/50 rounded-lg">
-                      <span className="text-gray-200">{offer}</span>
-                      <Badge variant="secondary" className="bg-blue-600 text-white">
+                    <div key={index} className="flex items-center justify-between p-3 bg-secondary/50 rounded-lg">
+                      <span className="text-foreground">{offer}</span>
+                      <Badge variant="secondary" className="bg-primary text-primary-foreground">
                         Limited Time
                       </Badge>
                     </div>
@@ -101,25 +101,25 @@ export function TechDetail({ techId }: TechDetailProps) {
             </Card>
 
             {/* Features */}
-            <Card className="bg-gray-800/50 border-gray-700">
+            <Card className="bg-card/50 border-border">
               <CardContent className="p-6">
-                <h3 className="text-xl font-semibold text-white mb-4">Store Features</h3>
+                <h3 className="text-xl font-semibold text-foreground mb-4">Store Features</h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="text-center p-3 bg-gray-700/50 rounded-lg">
-                    <Wifi className="h-8 w-8 text-blue-400 mx-auto mb-2" />
-                    <span className="text-sm text-gray-300">Free WiFi</span>
+                  <div className="text-center p-3 bg-secondary/50 rounded-lg">
+                    <Wifi className="h-8 w-8 text-primary mx-auto mb-2" />
+                    <span className="text-sm text-muted-foreground">Free WiFi</span>
                   </div>
-                  <div className="text-center p-3 bg-gray-700/50 rounded-lg">
-                    <Battery className="h-8 w-8 text-green-400 mx-auto mb-2" />
-                    <span className="text-sm text-gray-300">Device Testing</span>
+                  <div className="text-center p-3 bg-secondary/50 rounded-lg">
+                    <Battery className="h-8 w-8 text-accent mx-auto mb-2" />
+                    <span className="text-sm text-muted-foreground">Device Testing</span>
                   </div>
-                  <div className="text-center p-3 bg-gray-700/50 rounded-lg">
-                    <Cpu className="h-8 w-8 text-purple-400 mx-auto mb-2" />
-                    <span className="text-sm text-gray-300">Tech Support</span>
+                  <div className="text-center p-3 bg-secondary/50 rounded-lg">
+                    <Cpu className="h-8 w-8 text-primary mx-auto mb-2" />
+                    <span className="text-sm text-muted-foreground">Tech Support</span>
                   </div>
-                  <div className="text-center p-3 bg-gray-700/50 rounded-lg">
-                    <Smartphone className="h-8 w-8 text-orange-400 mx-auto mb-2" />
-                    <span className="text-sm text-gray-300">Trade-in</span>
+                  <div className="text-center p-3 bg-secondary/50 rounded-lg">
+                    <Smartphone className="h-8 w-8 text-accent mx-auto mb-2" />
+                    <span className="text-sm text-muted-foreground">Trade-in</span>
                   </div>
                 </div>
               </CardContent>
@@ -129,18 +129,18 @@ export function TechDetail({ techId }: TechDetailProps) {
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Action Buttons */}
-            <Card className="bg-gray-800/50 border-gray-700">
+            <Card className="bg-card/50 border-border">
               <CardContent className="p-6">
                 <div className="space-y-3">
-                  <Button className="w-full bg-blue-600 hover:bg-blue-700">
+                  <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
                     <Heart className="h-4 w-4 mr-2" />
                     Add to Favorites
                   </Button>
-                  <Button variant="outline" className="w-full border-gray-600 text-gray-300 hover:bg-gray-700">
+                  <Button variant="outline" className="w-full border-border text-foreground hover:bg-accent">
                     <Bookmark className="h-4 w-4 mr-2" />
                     Save for Later
                   </Button>
-                  <Button variant="outline" className="w-full border-gray-600 text-gray-300 hover:bg-gray-700">
+                  <Button variant="outline" className="w-full border-border text-foreground hover:bg-accent">
                     <Share2 className="h-4 w-4 mr-2" />
                     Share Store
                   </Button>
@@ -149,15 +149,15 @@ export function TechDetail({ techId }: TechDetailProps) {
             </Card>
 
             {/* Store Locations */}
-            <Card className="bg-gray-800/50 border-gray-700">
+            <Card className="bg-card/50 border-border">
               <CardContent className="p-6">
-                <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                  <MapPin className="h-5 w-5 text-red-400" />
+                <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+                  <MapPin className="h-5 w-5 text-destructive" />
                   Store Locations
                 </h3>
                 <div className="space-y-3">
                   {addresses.map((address, index) => (
-                    <div key={index} className="text-sm text-gray-300 p-2 bg-gray-700/30 rounded">
+                    <div key={index} className="text-sm text-muted-foreground p-2 bg-secondary/30 rounded">
                       {address}
                     </div>
                   ))}
@@ -166,15 +166,15 @@ export function TechDetail({ techId }: TechDetailProps) {
             </Card>
 
             {/* Store Hours */}
-            <Card className="bg-gray-800/50 border-gray-700">
+            <Card className="bg-card/50 border-border">
               <CardContent className="p-6">
-                <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                  <Clock className="h-5 w-5 text-green-400" />
+                <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+                  <Clock className="h-5 w-5 text-accent" />
                   Store Hours
                 </h3>
                 <div className="space-y-2">
                   {timings.map((timing, index) => (
-                    <div key={index} className="text-sm text-gray-300">
+                    <div key={index} className="text-sm text-muted-foreground">
                       {timing}
                     </div>
                   ))}

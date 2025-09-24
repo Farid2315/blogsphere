@@ -200,7 +200,7 @@ export function RestaurantDetail({ restaurantId }: RestaurantDetailProps) {
               <h2 className="text-xl font-semibold text-foreground mb-4">Current Offers</h2>
               <div className="space-y-3">
                 {restaurant.offers.map((offer, index) => (
-                  <Card key={index} className="border-l-4 border-l-gray-500 bg-card">
+                  <Card key={index} className="border-l-4 border-l-secondary bg-card">
                     <CardContent className="p-4">
                       <h3 className="font-medium text-foreground mb-1">{offer.title}</h3>
                       <p className="text-sm text-muted-foreground mb-2">{offer.description}</p>
@@ -220,7 +220,7 @@ export function RestaurantDetail({ restaurantId }: RestaurantDetailProps) {
             {restaurant.promotionLink && (
               <Button 
                 variant="link" 
-                className="text-gray-500 hover:text-gray-600 p-0"
+                className="text-secondary hover:text-primary p-0"
                 onClick={() => window.open(restaurant.promotionLink, '_blank')}
               >
                 Visit the promotion 🔗
@@ -233,7 +233,7 @@ export function RestaurantDetail({ restaurantId }: RestaurantDetailProps) {
             {restaurant.callNumber && (
               <Button 
                 size="lg" 
-                className="bg-gray-600 hover:bg-gray-700 text-white px-8 py-3"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-3"
                 onClick={() => window.open(`tel:${restaurant.callNumber}`, '_self')}
               >
                 <Phone className="mr-2 h-5 w-5" />
@@ -244,7 +244,7 @@ export function RestaurantDetail({ restaurantId }: RestaurantDetailProps) {
               <Button
                 size="lg"
                 variant="outline"
-                className="border-gray-500 text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-950 dark:text-white bg-transparent px-8 py-3"
+                className="border-secondary text-secondary-foreground hover:bg-secondary/20 bg-transparent px-8 py-3"
                 onClick={() => window.open(restaurant.companyWebsite || restaurant.promotionLink, '_blank')}
               >
                 <Globe className="mr-2 h-5 w-5" />
@@ -260,21 +260,21 @@ export function RestaurantDetail({ restaurantId }: RestaurantDetailProps) {
           <div className="space-y-3">
             {restaurant.instagramHandle && (
               <Button 
-                className="w-full bg-secondary hover:bg-secondary/80 text-secondary-foreground"
+                className="w-full bg-accent hover:bg-accent/80 text-accent-foreground"
                 onClick={() => restaurant.instagramHandle && window.open(`https://instagram.com/${restaurant.instagramHandle.replace('@', '')}`, '_blank')}
               >
                 {restaurant.instagramHandle}
               </Button>
             )}
-            <Button className="w-full bg-gray-600 hover:bg-gray-700 text-white">
+            <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
               <Heart className="mr-2 h-4 w-4" />
               Like ({restaurant.likesCount})
             </Button>
-            <Button className="w-full bg-gray-600 hover:bg-gray-700 text-white">
+            <Button className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground">
               <Share className="mr-2 h-4 w-4" />
               Share
             </Button>
-            <Button className="w-full bg-gray-600 hover:bg-gray-700 text-white">
+            <Button className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">
               <Bookmark className="mr-2 h-4 w-4" />
               Save
             </Button>

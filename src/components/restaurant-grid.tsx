@@ -57,7 +57,7 @@ export function RestaurantGrid() {
   const [restaurants, setRestaurants] = useState<Restaurant[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-// Removed unused addressCache state
+  const [addressCache, setAddressCache] = useState<{ [key: string]: string }>({})
   const { latitude, longitude, getCurrentPosition } = useGeolocation()
 
   useEffect(() => {
@@ -99,7 +99,7 @@ export function RestaurantGrid() {
               }
             }
           }
-// Remove setAddressCache since it's no longer used
+          setAddressCache(newAddressCache)
         } else {
           setError(data.error || 'Failed to fetch restaurants')
         }
@@ -180,22 +180,22 @@ export function RestaurantGrid() {
           </div>
         </div>
       )}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
         {restaurants.map((restaurant) => (
           <Link key={restaurant.id} href={`/restaurants/${restaurant.id}`}>
-            <Card className="group cursor-pointer overflow-hidden border-2 border-gray-400/60 hover:border-gray-500/80 transition-all duration-300 bg-card">
-              <div className="relative px-2">
+            <Card className="group cursor-pointer overflow-hidden border-2 border-gray-200 dark:border-gray-700 hover:border-primary/50 transition-all duration-300 bg-card shadow-md hover:shadow-xl hover:-translate-y-1">
+              <div className="relative">
                 <Image
                   src={restaurant.images[0] || "/placeholder.svg"}
                   alt={restaurant.title}
                   width={400}
                   height={192}
-                  className="w-full h-40 sm:h-48 object-cover"
+                  className="w-full h-32 sm:h-40 lg:h-48 object-cover"
                 />
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="absolute top-2 right-2 bg-black/50 hover:bg-black/70 text-white h-8 w-8 sm:h-10 sm:w-10"
+                  className="absolute top-2 right-3 bg-black/60 hover:bg-black/80 text-white h-8 w-8 sm:h-10 sm:w-10 rounded-full shadow-lg"
                   onClick={(e) => {
                     e.preventDefault()
                     e.stopPropagation()
@@ -205,48 +205,59 @@ export function RestaurantGrid() {
                   <Bookmark className="h-3 w-3 sm:h-4 sm:w-4" />
                 </Button>
               </div>
-              <CardContent className="p-3 sm:p-4">
-                <div className="flex justify-between items-start mb-2">
+              <CardContent className="p-2 sm:p-4">
+                <div className="flex justify-between items-start mb-2 sm:mb-3">
                   <div className="min-w-0 flex-1">
-                    <h3 className="font-semibold text-foreground text-sm sm:text-base truncate">{restaurant.title}</h3>
-                    <div className="flex items-center gap-2">
+                    <h3 className="font-bold text-foreground text-sm sm:text-base lg:text-lg truncate leading-tight">{restaurant.title}</h3>
+                    <div className="flex items-center gap-2 mt-1 min-w-0">
                       {restaurant.distance !== undefined && (
-                        <div className="flex items-center gap-1 text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded-full shrink-0">
-                          <MapPin className="h-3 w-3" />
-                          <span>{formatDistance(restaurant.distance)}</span>
+                        <div className="flex items-center gap-1 text-xs text-blue-600 bg-blue-50 dark:bg-blue-900/30 dark:text-blue-400 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full shrink-0">
+                          <MapPin className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+                          <span className="font-medium">{formatDistance(restaurant.distance)}</span>
+                        </div>
+                      )}
+                      {addressCache[restaurant.id] && (
+                        <div className="text-xs text-muted-foreground truncate flex-1 min-w-0 overflow-hidden whitespace-nowrap" title={addressCache[restaurant.id]}>
+                          {addressCache[restaurant.id]}
                         </div>
                       )}
                     </div>
                   </div>
-                  <div className="text-xs text-muted-foreground ml-2 flex items-center gap-1">
+                  <div className="text-xs text-muted-foreground ml-2 flex items-center gap-1 shrink-0">
                     {restaurant.rating && restaurant.rating > 0 && (
                       <>
-                        <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                        <span>{restaurant.rating.toFixed(1)}</span>
+                        <Star className="h-2.5 w-2.5 sm:h-3 sm:w-3 fill-yellow-400 text-yellow-400" />
+                        <span className="font-semibold text-foreground">{restaurant.rating.toFixed(1)}</span>
                       </>
                     )}
                     {restaurant.likesCount > 0 && (
-                      <span className="text-xs">{restaurant.likesCount} likes</span>
+                      <span className="text-xs font-medium">{restaurant.likesCount} likes</span>
                     )}
                   </div>
                 </div>
 
-                <div className="mb-3 sm:mb-4">
-                  <h4 className="text-xs sm:text-sm font-medium text-foreground mb-1">
-                    {restaurant.offers.length > 0 ? "Latest Offer:" : "Description:"}
-                  </h4>
-                  <p className="text-xs text-muted-foreground line-clamp-2">
-                    {restaurant.offers.length > 0 
-                      ? restaurant.offers[0].description 
-                      : restaurant.content
-                    }
-                  </p>
+                <div className="mb-2 sm:mb-4">
+                  <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 p-2 sm:p-3 rounded-lg sm:rounded-xl border border-blue-200 dark:border-blue-800">
+                    <h4 className="text-xs sm:text-sm font-bold text-blue-800 dark:text-blue-300 mb-1 sm:mb-2">
+                      {restaurant.offers.length > 0 ? "🎉 Special Offer" : "📝 About"}
+                    </h4>
+                    <p className="text-xs sm:text-sm text-blue-700 dark:text-blue-400 line-clamp-1 leading-relaxed">
+                      {restaurant.offers.length > 0 
+                        ? restaurant.offers[0].description.length > 35 
+                          ? restaurant.offers[0].description.substring(0, 35) + "..."
+                          : restaurant.offers[0].description
+                        : restaurant.content.length > 35 
+                          ? restaurant.content.substring(0, 35) + "..."
+                          : restaurant.content
+                      }
+                    </p>
+                  </div>
                 </div>
 
-                <div className="flex flex-col xs:flex-row gap-2">
+                <div className="flex gap-1.5 sm:gap-2">
                   <Button
-                    size="default"
-                    className="flex-1 bg-gray-700 hover:bg-gray-800 text-white text-sm py-2.5"
+                    size="sm"
+                    className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground text-xs py-1 sm:py-1.5 font-semibold rounded-md sm:rounded-lg border border-primary/20"
                     onClick={(e) => {
                       e.preventDefault()
                       e.stopPropagation()
@@ -255,12 +266,12 @@ export function RestaurantGrid() {
                       }
                     }}
                   >
-                    Call Now
+                    Call
                   </Button>
                   <Button
-                    size="default"
+                    size="sm"
                     variant="outline"
-                    className="flex-1 border-gray-500 text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 dark:text-white text-sm py-2.5"
+                    className="flex-1 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 text-xs py-1 sm:py-1.5 font-semibold rounded-md sm:rounded-lg"
                     onClick={(e) => {
                       e.preventDefault()
                       e.stopPropagation()

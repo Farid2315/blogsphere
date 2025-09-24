@@ -88,14 +88,14 @@ export function GamingGrid() {
                 <div className="flex gap-2">
                   <Button
                     size="sm"
-                    className="bg-purple-600 hover:bg-purple-700 text-white flex-1"
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground flex-1"
                     onClick={(e) => e.preventDefault()}
                   >
                     @userld
                   </Button>
                   <Button
                     size="sm"
-                    className="bg-purple-600 hover:bg-purple-700 text-white flex-1"
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground flex-1"
                     onClick={(e) => e.preventDefault()}
                   >
                     @userld

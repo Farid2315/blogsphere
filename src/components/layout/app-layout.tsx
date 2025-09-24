@@ -19,7 +19,7 @@ export function AppLayout({ children, title }: AppLayoutProps) {
       {sidebarOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setSidebarOpen(false)} />
-          <div className="relative w-64 h-full bg-gray-100 dark:bg-[#2C2C2C] shadow-xl">
+          <div className="relative w-64 h-full bg-background shadow-xl border-r border-border">
             <Sidebar onClose={() => setSidebarOpen(false)} />
           </div>
         </div>

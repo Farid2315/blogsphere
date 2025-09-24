@@ -20,10 +20,10 @@ export function Header({ title, onMenuClick, showMenuButton }: HeaderProps) {
             variant="ghost" 
             size="icon" 
             onClick={onMenuClick} 
-            className="lg:hidden hover:bg-gray-100 dark:hover:bg-gray-800 p-2 rounded-md transition-colors"
+            className="lg:hidden hover:bg-accent p-2 rounded-md transition-colors"
             aria-label="Open menu"
           >
-            <Menu className="h-5 w-5 text-gray-700 dark:text-gray-300" />
+            <Menu className="h-5 w-5 text-foreground" />
           </Button>
         )}
         <h1 className="text-lg lg:text-2xl font-bold text-foreground truncate">{title}</h1>
@@ -31,7 +31,7 @@ export function Header({ title, onMenuClick, showMenuButton }: HeaderProps) {
 
       <div className="flex items-center space-x-2 lg:space-x-4">
         <Link href="/create-promotion">
-          <Button variant="default" size="sm" className="bg-gray-600 hover:bg-gray-700 text-white">
+          <Button variant="default" size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground">
             <Plus className="h-4 w-4 lg:mr-2" />
             <span className="hidden sm:inline">New Post</span>
           </Button>

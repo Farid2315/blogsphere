@@ -88,24 +88,24 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-background via-muted to-background">
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-4">
-            <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center mr-3">
-              <MessageSquare className="w-6 h-6 text-white" />
+            <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center mr-3">
+              <MessageSquare className="w-6 h-6 text-primary-foreground" />
             </div>
-            <h1 className="text-2xl font-bold text-white dark:text-white light:text-gray-900">BlogSphere</h1>
+            <h1 className="text-2xl font-bold text-foreground">BlogSphere</h1>
           </div>
-          <h2 className="text-3xl font-bold text-white dark:text-white light:text-gray-900 mb-2">
+          <h2 className="text-3xl font-bold text-foreground mb-2">
             Login to BlogSphere
           </h2>
-          <p className="text-gray-400 dark:text-gray-400 light:text-gray-600">
+          <p className="text-muted-foreground">
             Or{" "}
             <Link
               href="/signup"
-              className="text-blue-400 hover:text-blue-300 transition-colors"
+              className="text-primary hover:text-primary/80 transition-colors"
             >
               create a new account
             </Link>
@@ -113,7 +113,7 @@ export default function LoginPage() {
         </div>
 
         {/* Login Form Card */}
-        <Card className="bg-gray-800 dark:bg-gray-800 light:bg-white border-gray-700 dark:border-gray-700 light:border-gray-200 shadow-2xl">
+        <Card className="bg-card border-border shadow-2xl">
           <CardContent className="p-6">
 
             
@@ -122,11 +122,11 @@ export default function LoginPage() {
               onClick={handleGoogleLogin}
               disabled={isGoogleLoading}
               variant="outline"
-              className="w-full bg-gray-700 dark:bg-gray-700 light:bg-gray-100 border-gray-600 dark:border-gray-600 light:border-gray-300 text-white dark:text-white light:text-gray-900 hover:bg-gray-600 dark:hover:bg-gray-600 light:hover:bg-gray-200 hover:border-gray-500 dark:hover:border-gray-500 light:hover:border-gray-400 mb-6 h-12 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-secondary border-border text-secondary-foreground hover:bg-secondary/80 hover:border-border mb-6 h-12 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <div className="flex items-center justify-center space-x-2">
                 {isGoogleLoading ? (
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
                 ) : (
                   <svg className="w-5 h-5" viewBox="0 0 24 24">
                     <path
@@ -153,9 +153,9 @@ export default function LoginPage() {
 
             {/* Separator */}
             <div className="relative mb-6">
-              <Separator className="bg-gray-600 dark:bg-gray-600 light:bg-gray-300" />
+              <Separator className="bg-border" />
               <div className="absolute inset-0 flex items-center justify-center">
-                <Badge className="bg-gray-800 dark:bg-gray-800 light:bg-gray-100 text-gray-400 dark:text-gray-400 light:text-gray-600 border-gray-600 dark:border-gray-600 light:border-gray-300">
+                <Badge className="bg-card text-muted-foreground border-border">
                   OR
                 </Badge>
               </div>
@@ -166,19 +166,19 @@ export default function LoginPage() {
               <div className="space-y-2">
                 <Label
                   htmlFor="email"
-                  className="text-white dark:text-white light:text-gray-900 text-sm font-medium"
+                  className="text-foreground text-sm font-medium"
                 >
                   Email
                 </Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-400 light:text-gray-500 w-4 h-4" />
+                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                   <Input
                     id="email"
                     type="email"
                     placeholder="example@companyname.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="pl-10 bg-gray-700 dark:bg-gray-700 light:bg-white border-gray-600 dark:border-gray-600 light:border-gray-300 text-white dark:text-white light:text-gray-900 placeholder-gray-400 dark:placeholder-gray-400 light:placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500"
+                    className="pl-10 bg-background border-border text-foreground placeholder-muted-foreground focus:border-primary focus:ring-primary"
                     required
                   />
                 </div>
@@ -188,32 +188,32 @@ export default function LoginPage() {
                 <div className="flex items-center justify-between">
                   <Label
                     htmlFor="password"
-                    className="text-white dark:text-white light:text-gray-900 text-sm font-medium"
+                    className="text-foreground text-sm font-medium"
                   >
                     Password
                   </Label>
                   <Link
                     href="/forgot-password"
-                    className="text-blue-400 hover:text-blue-300 text-sm transition-colors"
+                    className="text-primary hover:text-primary/80 text-sm transition-colors"
                   >
                     Forgot your password?
                   </Link>
                 </div>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-400 light:text-gray-500 w-4 h-4" />
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
                     placeholder="Password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="pl-10 pr-10 bg-gray-700 dark:bg-gray-700 light:bg-white border-gray-600 dark:border-gray-600 light:border-gray-300 text-white dark:text-white light:text-gray-900 placeholder-gray-400 dark:placeholder-gray-400 light:placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500"
+                    className="pl-10 pr-10 bg-background border-border text-foreground placeholder-muted-foreground focus:border-primary focus:ring-primary"
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-400 light:text-gray-500 hover:text-gray-300 dark:hover:text-gray-300 light:hover:text-gray-600"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
                   >
                     {showPassword ? (
                       <EyeOff className="w-4 h-4" />
@@ -227,11 +227,11 @@ export default function LoginPage() {
               <Button
                 type="submit"
                 disabled={isEmailLoading}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white h-12 text-base font-medium mt-6 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground h-12 text-base font-medium mt-6 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isEmailLoading ? (
                   <div className="flex items-center space-x-2">
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
                     <span>Signing in...</span>
                   </div>
                 ) : (
@@ -246,7 +246,7 @@ export default function LoginPage() {
         <div className="text-center mt-6">
           <Link
             href="/"
-            className="inline-flex items-center text-gray-400 dark:text-gray-400 light:text-gray-600 hover:text-white dark:hover:text-white light:hover:text-gray-900 transition-colors"
+            className="inline-flex items-center text-muted-foreground hover:text-foreground transition-colors"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Home
@@ -255,4 +255,4 @@ export default function LoginPage() {
       </div>
     </div>
   );
-} 
+}

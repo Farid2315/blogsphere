@@ -19,7 +19,6 @@ import {
 } from "lucide-react"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { useTheme } from "next-themes"
 
 const navigation = [
   {
@@ -46,21 +45,13 @@ interface SidebarProps {
 export function Sidebar({ onClose }: SidebarProps) {
   const pathname = usePathname()
   const [locationOpen, setLocationOpen] = useState(true)
-  const { theme, resolvedTheme } = useTheme()
-  const isDark = theme === "dark" || resolvedTheme === "dark"
 
   return (
-    <div
-      className="flex h-screen w-64 flex-col"
-      style={{
-        backgroundColor: isDark ? "#1a1a1a" : "#f3f4f6",
-        color: isDark ? "#ffffff" : "#111827",
-      }}
-    >
+    <div className="flex h-screen w-64 flex-col bg-background border-r border-border">
       {/* Logo */}
       <div className="flex h-16 items-center justify-between px-6">
-        <h1 className="text-xl font-bold">
-          Blog<span className={isDark ? "text-gray-300" : "text-gray-600"}>Sphere</span>
+        <h1 className="text-xl font-bold text-foreground">
+          Blog<span className="text-muted-foreground">Sphere</span>
         </h1>
         {onClose && (
           <Button variant="ghost" size="icon" onClick={onClose} className="lg:hidden">
@@ -73,7 +64,7 @@ export function Sidebar({ onClose }: SidebarProps) {
       <nav className="flex-1 space-y-1 px-3 py-4 overflow-y-auto">
         {navigation.map((section) => (
           <div key={section.name}>
-            <h3 className={`px-3 py-2 text-sm font-medium ${isDark ? "text-gray-400" : "text-gray-500"}`}>
+            <h3 className="px-3 py-2 text-sm font-medium text-muted-foreground">
               {section.name}
             </h3>
             <div className="space-y-1">
@@ -93,14 +84,10 @@ export function Sidebar({ onClose }: SidebarProps) {
                       <button
                         onClick={() => setLocationOpen(!locationOpen)}
                         className={cn(
-                          "group flex w-full items-center rounded-md px-3 py-2 text-sm font-medium",
+                          "group flex w-full items-center rounded-md px-3 py-2 text-sm font-medium transition-colors",
                           isActive
-                            ? isDark
-                              ? "bg-gray-700 text-white"
-                              : "bg-gray-200 text-gray-900"
-                            : isDark
-                              ? "text-gray-300 hover:bg-gray-700 hover:text-white"
-                              : "text-gray-700 hover:bg-gray-200 hover:text-gray-900",
+                            ? "bg-accent text-accent-foreground"
+                            : "text-foreground hover:bg-accent hover:text-accent-foreground",
                         )}
                       >
                         <item.icon className="mr-3 h-5 w-5" />
@@ -115,11 +102,7 @@ export function Sidebar({ onClose }: SidebarProps) {
                             <Link
                               key={location}
                               href="/"
-                              className={`block rounded-md px-3 py-2 text-sm ${
-                                isDark
-                                  ? "text-gray-400 hover:bg-gray-700 hover:text-white"
-                                  : "text-gray-600 hover:bg-gray-200 hover:text-gray-900"
-                              }`}
+                              className="block rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
                             >
                               {location}
                             </Link>
@@ -135,14 +118,10 @@ export function Sidebar({ onClose }: SidebarProps) {
                     key={item.name}
                     href={item.href}
                     className={cn(
-                      "group flex items-center rounded-md px-3 py-2 text-sm font-medium",
+                      "group flex items-center rounded-md px-3 py-2 text-sm font-medium transition-colors",
                       isActive
-                        ? isDark
-                          ? "bg-gray-700 text-white"
-                          : "bg-gray-200 text-gray-900"
-                        : isDark
-                          ? "text-gray-300 hover:bg-gray-700 hover:text-white"
-                          : "text-gray-700 hover:bg-gray-200 hover:text-gray-900",
+                        ? "bg-accent text-accent-foreground"
+                        : "text-foreground hover:bg-accent hover:text-accent-foreground",
                     )}
                   >
                     <item.icon className="mr-3 h-5 w-5" />
@@ -159,14 +138,10 @@ export function Sidebar({ onClose }: SidebarProps) {
           <Link
             href="/profile"
             className={cn(
-              "group flex items-center rounded-md px-3 py-2 text-sm font-medium",
+              "group flex items-center rounded-md px-3 py-2 text-sm font-medium transition-colors",
               pathname === "/profile"
-                ? isDark
-                  ? "bg-gray-700 text-white"
-                  : "bg-gray-200 text-gray-900"
-                : isDark
-                  ? "text-gray-300 hover:bg-gray-700 hover:text-white"
-                  : "text-gray-700 hover:bg-gray-200 hover:text-gray-900",
+                ? "bg-accent text-accent-foreground"
+                : "text-foreground hover:bg-accent hover:text-accent-foreground",
             )}
           >
             <User className="mr-3 h-5 w-5" />
@@ -175,14 +150,10 @@ export function Sidebar({ onClose }: SidebarProps) {
           <Link
             href="/settings"
             className={cn(
-              "group flex items-center rounded-md px-3 py-2 text-sm font-medium",
+              "group flex items-center rounded-md px-3 py-2 text-sm font-medium transition-colors",
               pathname === "/settings"
-                ? isDark
-                  ? "bg-gray-700 text-white"
-                  : "bg-gray-200 text-gray-900"
-                : isDark
-                  ? "text-gray-300 hover:bg-gray-700 hover:text-white"
-                  : "text-gray-700 hover:bg-gray-200 hover:text-gray-900",
+                ? "bg-accent text-accent-foreground"
+                : "text-foreground hover:bg-accent hover:text-accent-foreground",
             )}
           >
             <Settings className="mr-3 h-5 w-5" />

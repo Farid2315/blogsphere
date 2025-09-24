@@ -91,22 +91,22 @@ export function TechGrid() {
       {techStores.map((store) => {
         const IconComponent = store.icon;
         return (
-          <Card key={store.id} className="bg-gray-800/50 border-gray-700 hover:bg-gray-800/70 transition-all duration-300 group">
+          <Card key={store.id} className="bg-card/50 border-border hover:bg-card/70 transition-all duration-300 group">
             <CardContent className="p-0">
               {/* Header with gradient background */}
               <div className={`bg-gradient-to-r ${store.gradient} p-6 rounded-t-lg`}>
                 <div className="flex items-center justify-between mb-4">
-                  <IconComponent className="h-8 w-8 text-white" />
+                  <IconComponent className="h-8 w-8 text-primary-foreground" />
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="text-white hover:bg-white/20"
+                    className="text-primary-foreground hover:bg-primary-foreground/20"
                   >
                     <Bookmark className="h-4 w-4" />
                   </Button>
                 </div>
-                <h3 className="text-xl font-bold text-white mb-2">{store.name}</h3>
-                <p className="text-white/80 text-sm">{store.category}</p>
+                <h3 className="text-xl font-bold text-primary-foreground mb-2">{store.name}</h3>
+                <p className="text-primary-foreground/80 text-sm">{store.category}</p>
               </div>
 
               {/* Content */}
@@ -114,11 +114,11 @@ export function TechGrid() {
                 {/* Rating and Location */}
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-1">
-                    <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                    <span className="text-white text-sm font-medium">{store.rating}</span>
-                    <span className="text-gray-400 text-sm">({store.reviews})</span>
+                    <Star className="h-4 w-4 text-accent fill-current" />
+                    <span className="text-foreground text-sm font-medium">{store.rating}</span>
+                    <span className="text-muted-foreground text-sm">({store.reviews})</span>
                   </div>
-                  <div className="flex items-center gap-1 text-gray-400 text-sm">
+                  <div className="flex items-center gap-1 text-muted-foreground text-sm">
                     <MapPin className="h-4 w-4" />
                     <span className="truncate max-w-[120px]">{store.location}</span>
                   </div>
@@ -126,7 +126,7 @@ export function TechGrid() {
 
                 {/* Current Offer */}
                 <div className="mb-4">
-                  <Badge variant="secondary" className="bg-blue-600/20 text-blue-400 border-blue-600/30">
+                  <Badge variant="secondary" className="bg-primary/20 text-primary border-primary/30">
                     {store.offer}
                   </Badge>
                 </div>
@@ -134,14 +134,14 @@ export function TechGrid() {
                 {/* Action Buttons */}
                 <div className="flex gap-2">
                   <Link href={`/tech/${store.id}`} className="flex-1">
-                    <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+                    <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
                       View Store
                     </Button>
                   </Link>
                   <Button
                     variant="outline"
                     size="sm"
-                    className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                    className="border-border text-foreground hover:bg-accent"
                   >
                     <Star className="h-4 w-4" />
                   </Button>

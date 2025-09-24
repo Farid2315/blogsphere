@@ -62,20 +62,20 @@ export function TravelDetail() {
           {/* More Info */}
           <div>
             <h3 className="text-lg font-medium text-foreground mb-2">For more info</h3>
-            <Button variant="link" className="text-red-500 hover:text-red-600 p-0">
+            <Button variant="link" className="text-secondary hover:text-primary p-0">
               Visit the promotion 🔗
             </Button>
           </div>
 
           {/* Action Buttons */}
           <div className="flex gap-4">
-            <Button className="bg-red-600 hover:bg-red-700 text-white">
+            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
               <Phone className="mr-2 h-4 w-4" />
               Call
             </Button>
             <Button
               variant="outline"
-              className="border-red-500 text-red-500 hover:bg-red-50 dark:hover:bg-red-950 bg-transparent"
+              className="border-secondary text-secondary-foreground hover:bg-secondary/10 bg-transparent"
             >
               <Globe className="mr-2 h-4 w-4" />
               Visit Website
@@ -87,16 +87,16 @@ export function TravelDetail() {
         <div className="space-y-6">
           {/* Action Buttons */}
           <div className="space-y-3">
-            <Button className="w-full bg-gray-700 hover:bg-gray-600 text-white">@travel_explorer</Button>
-            <Button className="w-full bg-red-600 hover:bg-red-700 text-white">
+            <Button className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">@travel_explorer</Button>
+            <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
               <Heart className="mr-2 h-4 w-4" />
               Like
             </Button>
-            <Button className="w-full bg-red-600 hover:bg-red-700 text-white">
+            <Button className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground">
               <Share className="mr-2 h-4 w-4" />
               Share
             </Button>
-            <Button className="w-full bg-red-600 hover:bg-red-700 text-white">
+            <Button className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground">
               <Bookmark className="mr-2 h-4 w-4" />
               Save
             </Button>
