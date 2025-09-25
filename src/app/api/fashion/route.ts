@@ -39,12 +39,12 @@ export async function GET(request: NextRequest) {
       const minLng = lng - lngDelta
       const maxLng = lng + lngDelta
 
-      // Use aggregation to get all restaurants and calculate distance
-      const nearbyRestaurants = await prisma.post.aggregateRaw({
+      // Use aggregation to get all fashions and calculate distance
+      const nearbyFashion = await prisma.post.aggregateRaw({
         pipeline: [
           {
             $match: {
-              domain: { $in: ["food", "restaurant"] },
+              domain: { $in: ["fashion"] },
               location: { $exists: true }
             }
           },
@@ -130,7 +130,7 @@ export async function GET(request: NextRequest) {
         pipeline: [
           {
             $match: {
-              domain: { $in: ["food", "restaurant"] },
+              domain: { $in: ["fashion"] },
               location: { $exists: true }
             }
           },
@@ -174,7 +174,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({
         success: true,
         data: {
-          restaurants: nearbyRestaurants,
+          fashions: nearbyFashion,
           pagination: {
             currentPage: page,
             totalPages,
@@ -192,7 +192,7 @@ export async function GET(request: NextRequest) {
     // Build query filters
     const where: any = {
       domain: {
-        in: ['food', 'restaurant']
+        in: ['fashion']
       }
     }
 
@@ -204,8 +204,8 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Fetch restaurants with pagination
-    const restaurants = await prisma.post.findMany({
+    // Fetch fashions with pagination
+    const fashions = await prisma.post.findMany({
       where: {
         ...where,
         // Remove author filter to handle posts without authors
@@ -256,7 +256,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: {
-        restaurants,
+        fashions,
         pagination: {
           currentPage: page,
           totalPages,
@@ -269,11 +269,11 @@ export async function GET(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Error fetching restaurants:', error)
+    console.error('Error fetching fashions:', error)
     return NextResponse.json(
       { 
         success: false,
-        error: 'Failed to fetch restaurants' 
+        error: 'Failed to fetch fashions' 
       },
       { status: 500 }
     )

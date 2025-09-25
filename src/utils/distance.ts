@@ -50,7 +50,7 @@ export function formatDistance(distanceInMeters: number): string {
  * @param getCoordinates Function to extract coordinates from an item
  * @returns Sorted array with distance information
  */
-export function sortByDistance<T>(
+export function sortByDistance<T extends Record<string, any>>(
   items: T[],
   userLocation: Coordinates,
   getCoordinates: (item: T) => Coordinates | null

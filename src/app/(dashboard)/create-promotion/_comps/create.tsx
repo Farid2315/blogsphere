@@ -28,6 +28,7 @@ export function CreatePromotionPage() {
   const [latitude, setLatitude] = useState(""); // Separate latitude field
   const [longitude, setLongitude] = useState(""); // Separate longitude field
   const [coords, setCoords] = useState<[number, number] | null>(null); // [lon, lat]
+  const [offerTag, setOfferTag] = useState(""); // New offer tag field
 
   const [branches, setBranches] = useState<Branch[]>([
     { name: "", address: "", latitude: undefined, longitude: undefined },
@@ -76,6 +77,7 @@ export function CreatePromotionPage() {
     domain,
     address, // Include address in payload
     locationName,
+    offerTag, // Include offer tag in payload
     location: (latitude && longitude) ? { 
       longitude: parseFloat(longitude), 
       latitude: parseFloat(latitude) 
@@ -95,6 +97,28 @@ export function CreatePromotionPage() {
   });
 
   const submit = async () => {
+    // Validate required fields
+    if (!title.trim()) {
+      alert("Please enter a promotion title");
+      return;
+    }
+    if (!content.trim()) {
+      alert("Please enter a description");
+      return;
+    }
+    if (!offerTag) {
+      alert("Please select an offer tag");
+      return;
+    }
+    if (!locationName.trim()) {
+      alert("Please enter a location");
+      return;
+    }
+    if (!address.trim()) {
+      alert("Please enter an address");
+      return;
+    }
+
     setSubmitting(true);
     const payload = buildPayload();
     try {
@@ -129,20 +153,21 @@ export function CreatePromotionPage() {
             {/* Promotion Title */}
             <div className="space-y-2">
               <label className="text-foreground font-medium text-lg">
-                Promotion Title
+                Promotion Title <span className="text-red-500">*</span>
               </label>
               <input
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Enter a catchy title for your promotion"
                 className="w-full p-4 bg-card border border-border rounded-lg text-foreground placeholder-muted-foreground focus:border-ring focus:ring-1 focus:ring-ring transition-all duration-200 hover:bg-muted/30 focus:shadow-lg"
+                required
               />
             </div>
 
             {/* Description */}
             <div className="space-y-2">
               <label className="text-foreground font-medium text-lg">
-                Description
+                Description <span className="text-red-500">*</span>
               </label>
               <textarea
                 value={content}
@@ -150,13 +175,14 @@ export function CreatePromotionPage() {
                 placeholder="Describe your promotion in detail..."
                 rows={4}
                 className="w-full p-4 bg-card border border-border rounded-lg text-foreground placeholder-muted-foreground focus:border-ring focus:ring-1 focus:ring-ring transition-all duration-200 resize-none hover:bg-muted/30 focus:shadow-lg"
+                required
               />
             </div>
 
             {/* Category Selection */}
             <div className="space-y-2">
               <label className="text-foreground font-medium text-lg">
-                Category
+                Category <span className="text-red-500">*</span>
               </label>
               <Select value={domain} onValueChange={setDomain}>
                 <SelectTrigger className="w-full p-4 bg-card border border-border rounded-lg text-foreground focus:border-ring focus:ring-1 focus:ring-ring transition-all duration-200 hover:bg-muted/30 focus:shadow-lg">
@@ -179,29 +205,55 @@ export function CreatePromotionPage() {
               </Select>
             </div>
 
+            {/* Offer Tag */}
+            <div className="space-y-2">
+              <label className="text-foreground font-medium text-lg">
+                Offer Tag <span className="text-red-500">*</span>
+              </label>
+              <Select value={offerTag} onValueChange={setOfferTag}>
+                <SelectTrigger className="w-full p-4 bg-card border border-border rounded-lg text-foreground focus:border-ring focus:ring-1 focus:ring-ring transition-all duration-200 hover:bg-muted/30 focus:shadow-lg">
+                  <SelectValue placeholder="25% OFF, Buy 1 Get 1, etc." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="25% OFF">25% OFF</SelectItem>
+                  <SelectItem value="50% OFF">50% OFF</SelectItem>
+                  <SelectItem value="Buy 1 Get 1">Buy 1 Get 1</SelectItem>
+                  <SelectItem value="Buy 2 Get 1">Buy 2 Get 1</SelectItem>
+                  <SelectItem value="Flat 30% OFF">Flat 30% OFF</SelectItem>
+                  <SelectItem value="Up to 70% OFF">Up to 70% OFF</SelectItem>
+                  <SelectItem value="Free Delivery">Free Delivery</SelectItem>
+                  <SelectItem value="Limited Time Offer">Limited Time Offer</SelectItem>
+                  <SelectItem value="Flash Sale">Flash Sale</SelectItem>
+                  <SelectItem value="Weekend Special">Weekend Special</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
             {/* Location */}
             <div className="space-y-2">
               <label className="text-foreground font-medium text-lg">
-                Location
+                Location <span className="text-red-500">*</span>
               </label>
               <input
                 value={locationName}
                 onChange={(e) => setLocationName(e.target.value)}
                 placeholder="Enter the location of the promotion"
                 className="w-full p-4 bg-card border border-border rounded-lg text-foreground placeholder-muted-foreground focus:border-ring focus:ring-1 focus:ring-ring transition-all duration-200 hover:bg-muted/30 focus:shadow-lg"
+                required
               />
             </div>
 
             {/* Address */}
             <div className="space-y-2">
               <label className="text-foreground font-medium text-lg">
-                Address
+                Address <span className="text-red-500">*</span>
               </label>
               <input
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
                 placeholder="Enter the full address (e.g., 123 Main St, Koramangala, Bangalore)"
                 className="w-full p-4 bg-card border border-border rounded-lg text-foreground placeholder-muted-foreground focus:border-ring focus:ring-1 focus:ring-ring transition-all duration-200 hover:bg-muted/30 focus:shadow-lg"
+                required
               />
             </div>
 

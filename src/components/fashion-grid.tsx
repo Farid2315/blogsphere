@@ -55,7 +55,7 @@ interface Restaurant {
 }
 
 export function RestaurantGrid() {
-  const [restaurants, setRestaurants] = useState<Restaurant[]>([])
+  const [fashion, setfashion] = useState<Restaurant[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [addressCache, setAddressCache] = useState<{ [key: string]: string }>({})
@@ -95,12 +95,12 @@ export function RestaurantGrid() {
   }
 
   useEffect(() => {
-    const fetchRestaurants = async () => {
+    const fetchfashion = async () => {
       try {
         setLoading(true)
         
         // Build API URL with location parameters if available
-        let apiUrl = '/api/restaurants'
+        let apiUrl = '/api/fashion'
         const params = new URLSearchParams()
         
         if (latitude && longitude) {
@@ -117,12 +117,12 @@ export function RestaurantGrid() {
         const data = await response.json()
         
         if (data.success) {
-          const restaurantsData = data.data.restaurants
-          setRestaurants(restaurantsData)
+          const fashionData = data.data.fashion
+          setfashion(fashionData)
           
           // Convert coordinate strings to addresses
           const newAddressCache: { [key: string]: string } = {}
-          for (const restaurant of restaurantsData) {
+          for (const restaurant of fashionData) {
             if (restaurant.locationName) {
               try {
                 const address = await convertCoordinateStringToAddress(restaurant.locationName)
@@ -135,17 +135,17 @@ export function RestaurantGrid() {
           }
           setAddressCache(newAddressCache)
         } else {
-          setError(data.error || 'Failed to fetch restaurants')
+          setError(data.error || 'Failed to fetch fashion')
         }
       } catch (err) {
-        setError('Failed to fetch restaurants')
-        console.error('Error fetching restaurants:', err)
+        setError('Failed to fetch fashion')
+        console.error('Error fetching fashion:', err)
       } finally {
         setLoading(false)
       }
     }
 
-    fetchRestaurants()
+    fetchfashion()
   }, [latitude, longitude])
 
   if (loading) {
@@ -181,11 +181,11 @@ export function RestaurantGrid() {
     )
   }
 
-  if (restaurants.length === 0) {
+  if (fashion.length === 0) {
     return (
       <div className="p-3 sm:p-4 lg:p-6">
         <div className="text-center py-12">
-          <p className="text-muted-foreground mb-4">No restaurants found</p>
+          <p className="text-muted-foreground mb-4">No fashion found</p>
           <p className="text-sm text-muted-foreground">
             Be the first to add a restaurant promotion!
           </p>
@@ -199,8 +199,8 @@ export function RestaurantGrid() {
         <div className="mb-6 p-4 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="font-medium text-gray-800 dark:text-gray-100 mb-1">Find nearby restaurants</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Allow location access to see restaurants sorted by distance</p>
+              <h3 className="font-medium text-gray-800 dark:text-gray-100 mb-1">Find nearby fashion</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Allow location access to see fashion sorted by distance</p>
             </div>
             <Button 
               onClick={getCurrentPosition}
@@ -215,8 +215,8 @@ export function RestaurantGrid() {
         </div>
       )}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
-        {restaurants.map((restaurant) => (
-          <Link key={restaurant.id} href={`/restaurants/${restaurant.id}`}>
+        {fashion.map((restaurant) => (
+          <Link key={restaurant.id} href={`/fashion/${restaurant.id}`}>
             <Card className="group cursor-pointer overflow-hidden border border-gray-200 dark:border-gray-700 hover:border-primary/50 transition-all duration-300 bg-card shadow-md hover:shadow-xl hover:shadow-blue-500/10 hover:scale-[1.02] hover:-translate-y-1 rounded-xl h-fit transform-gpu">
             {/* User Profile Header - Further reduced padding */}
             <div className="flex items-center gap-2 p-1 pb-0 pl-5">

@@ -1,6 +1,7 @@
 // src/app/api/posts/create/route.ts
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { auth } from "@/lib/auth";
 
 type Body = {
   authorId?: string;
@@ -9,6 +10,7 @@ type Body = {
   domain: string;
   address?: string; // New address field
   locationName: string;
+  offerTag?: string; // New offer tag field
   location?: { longitude: number; latitude: number } | null;
   branches?: {
     name: string;
@@ -34,11 +36,38 @@ type Body = {
 
 export async function POST(req: Request) {
   try {
+    // Get session from BetterAuth
+    const session = await auth.api.getSession({
+      headers: req.headers,
+    });
+
+    // Extract user ID from session
+    const userId = session?.user?.id;
+    
+    if (!userId) {
+      return NextResponse.json({ error: "Authentication required" }, { status: 401 });
+    }
+
     const body = (await req.json()) as Body;
 
-    // basic validation
-    if (!body.title || !body.domain || !body.locationName) {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    // Validate required fields
+    if (!body.title?.trim()) {
+      return NextResponse.json({ error: "Title is required" }, { status: 400 });
+    }
+    if (!body.content?.trim()) {
+      return NextResponse.json({ error: "Description is required" }, { status: 400 });
+    }
+    if (!body.offerTag?.trim()) {
+      return NextResponse.json({ error: "Offer tag is required" }, { status: 400 });
+    }
+    if (!body.locationName?.trim()) {
+      return NextResponse.json({ error: "Location is required" }, { status: 400 });
+    }
+    if (!body.address?.trim()) {
+      return NextResponse.json({ error: "Address is required" }, { status: 400 });
+    }
+    if (!body.domain) {
+      return NextResponse.json({ error: "Category is required" }, { status: 400 });
     }
 
     // transform location to GeoJSON
@@ -56,12 +85,13 @@ export async function POST(req: Request) {
 
     const post = await prisma.post.create({
       data: {
-        authorId: body.authorId ?? "anonymous",
+        authorId: userId, // Use the authenticated user's ID
         title: body.title,
         content: body.content ?? "",
         domain: body.domain,
         address: body.address ?? null, // Include address field
         locationName: body.locationName,
+        promotionOfferTag: body.offerTag, // Store offer tag in Post model
         location: locationGeo as { type: string; coordinates: number[] }, // prisma composite type -> MongoDB doc
         likesCount: 0,
         sharesCount: 0,

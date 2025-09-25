@@ -28,6 +28,9 @@ model User {
   longitude         Float?
   locationUpdatedAt DateTime?
 
+  // Promotion offer tag for posts
+
+
   updatedAt         DateTime   @default(now())
 
   sessions          Session[]
@@ -69,7 +72,7 @@ model Post {
 
   // Offers
   offers          Offer[]
-
+  promotionOfferTag String?    // e.g. "25% OFF ALL JEANS", "BUY 2 GET 1 FREE"
   // Media
   images          String[]      // multiple image URLs
 
