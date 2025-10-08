@@ -8,7 +8,7 @@ import { useEffect, useState } from "react"
 import { AddressDisplay } from "@/components/AddressDisplay"
 import { convertCoordinateStringToAddress } from "@/utils/coordinate-converter"
 
-interface fashionDetailProps {
+interface FashionDetailProps {
   fashionId: string
 }
 
@@ -64,7 +64,7 @@ interface Fashion {
   }>
 }
 
-export function FashionDetail({ fashionId }: fashionDetailProps) {
+export function FashionDetail({ fashionId }: FashionDetailProps) {
   const [fashion, setFashion] = useState<Fashion | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -74,7 +74,7 @@ export function FashionDetail({ fashionId }: fashionDetailProps) {
     const fetchFashion = async () => {
       try {
         setLoading(true)
-        const response = await fetch(`/api/fashions/${fashionId}`)
+        const response = await fetch(`/api/fashion/${fashionId}`)
         
         if (!response.ok) {
           throw new Error('Failed to fetch fashion details')
@@ -149,7 +149,7 @@ export function FashionDetail({ fashionId }: fashionDetailProps) {
       <div className="p-6 max-w-6xl mx-auto">
         <Card>
           <CardContent className="p-6 text-center">
-            <p className="text-muted-foreground">fashion not found</p>
+            <p className="text-muted-foreground">Fashion not found</p>
           </CardContent>
         </Card>
       </div>
@@ -160,7 +160,7 @@ export function FashionDetail({ fashionId }: fashionDetailProps) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-6">
-          {/* fashion Header */}
+          {/* Fashion Header */}
           <div>
             <h1 className="text-3xl font-bold text-foreground mb-2">{fashion.title}</h1>
             <div className="flex items-center gap-4 text-muted-foreground">
@@ -175,7 +175,7 @@ export function FashionDetail({ fashionId }: fashionDetailProps) {
             </div>
           </div>
 
-          {/* fashion Image */}
+          {/* Fashion Image */}
           <div className="relative">
             <Image
               src={fashion.images?.[0] || "/placeholder.svg"}

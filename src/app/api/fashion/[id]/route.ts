@@ -12,8 +12,7 @@ export async function GET(
     // First check if the fashion exists
     const fashionExists = await prisma.post.findUnique({
       where: {
-        id: id,
-        domain: "fashion"
+        id: id
       },
       select: {
         id: true,
@@ -36,8 +35,7 @@ export async function GET(
     
     const fashion = await prisma.post.findUnique({
       where: {
-        id: id,
-        domain: "fashion"
+        id: id
       },
       select: {
         id: true,

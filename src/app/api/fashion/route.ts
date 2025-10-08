@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
       }
 
       // Since we can't create 2dsphere index, use a simpler approach
-      // Filter restaurants by approximate distance using bounding box
+      // Filter fashions by approximate distance using bounding box
       const earthRadius = 6371000 // Earth's radius in meters
       const latDelta = (radius / earthRadius) * (180 / Math.PI)
       const lngDelta = (radius / earthRadius) * (180 / Math.PI) / Math.cos(lat * Math.PI / 180)
@@ -40,11 +40,11 @@ export async function GET(request: NextRequest) {
       const maxLng = lng + lngDelta
 
       // Use aggregation to get all fashions and calculate distance
-      const nearbyFashion = await prisma.post.aggregateRaw({
+      const nearbyFashions = await prisma.post.aggregateRaw({
         pipeline: [
           {
             $match: {
-              domain: { $in: ["fashion"] },
+              domain: { $in: ["fashion", "style"] },
               location: { $exists: true }
             }
           },
@@ -125,12 +125,12 @@ export async function GET(request: NextRequest) {
         ]
       })
 
-      // Get total count for all restaurants
+      // Get total count for all fashions
       const totalCountResult = await prisma.post.aggregateRaw({
         pipeline: [
           {
             $match: {
-              domain: { $in: ["fashion"] },
+              domain: { $in: ["fashion", "style"] },
               location: { $exists: true }
             }
           },
@@ -174,7 +174,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({
         success: true,
         data: {
-          fashions: nearbyFashion,
+          fashions: nearbyFashions,
           pagination: {
             currentPage: page,
             totalPages,
@@ -192,7 +192,7 @@ export async function GET(request: NextRequest) {
     // Build query filters
     const where: any = {
       domain: {
-        in: ['fashion']
+        in: ['fashion', 'style']
       }
     }
 

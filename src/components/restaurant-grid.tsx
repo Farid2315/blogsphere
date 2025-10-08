@@ -117,12 +117,22 @@ export function RestaurantGrid() {
         const data = await response.json()
         
         if (data.success) {
-          const restaurantsData = data.data.restaurants
-          setRestaurants(restaurantsData)
+          let restaurantsData: any =
+            data?.data?.restaurants ??
+            data?.data?.restaurant ??
+            data?.restaurants ??
+            data?.restaurant ??
+            []
+
+          if (!Array.isArray(restaurantsData)) {
+            restaurantsData = restaurantsData ? [restaurantsData] : []
+          }
+
+          setRestaurants(restaurantsData as Restaurant[])
           
           // Convert coordinate strings to addresses
           const newAddressCache: { [key: string]: string } = {}
-          for (const restaurant of restaurantsData) {
+          for (const restaurant of restaurantsData as Restaurant[]) {
             if (restaurant.locationName) {
               try {
                 const address = await convertCoordinateStringToAddress(restaurant.locationName)
@@ -241,7 +251,7 @@ export function RestaurantGrid() {
                 </p>
               </div>
               <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1 pr-5">
-                {restaurant.distance !== undefined && (
+                {typeof restaurant.distance === 'number' && (
                   <>
                     <MapPin className="h-3 w-3" />
                     <span>{formatDistance(restaurant.distance)}</span>

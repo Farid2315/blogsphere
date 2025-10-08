@@ -10,7 +10,7 @@ import { convertCoordinateStringToAddress } from "@/utils/coordinate-converter"
 import { useGeolocation } from "@/hooks/use-geolocation"
 import { formatDistance } from "@/utils/distance"
 
-interface Restaurant {
+interface Fashion {
   id: string
   title: string
   content: string
@@ -54,8 +54,8 @@ interface Restaurant {
   }
 }
 
-export function RestaurantGrid() {
-  const [fashion, setfashion] = useState<Restaurant[]>([])
+export function FashionGrid() {
+  const [fashions, setFashions] = useState<Fashion[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [addressCache, setAddressCache] = useState<{ [key: string]: string }>({})
@@ -64,38 +64,38 @@ export function RestaurantGrid() {
   const { latitude, longitude, getCurrentPosition } = useGeolocation()
 
   // Handle like functionality
-  const handleLike = (restaurantId: string, e?: React.MouseEvent) => {
+  const handleLike = (fashionId: string, e?: React.MouseEvent) => {
     if (e) {
       e.preventDefault()
       e.stopPropagation()
     }
     setLikedPosts(prev => {
       const newLiked = new Set(prev)
-      if (newLiked.has(restaurantId)) {
-        newLiked.delete(restaurantId)
+      if (newLiked.has(fashionId)) {
+        newLiked.delete(fashionId)
       } else {
-        newLiked.add(restaurantId)
+        newLiked.add(fashionId)
       }
       return newLiked
     })
   }
 
   // Handle double click on image
-  const handleDoubleClick = (restaurantId: string, e: React.MouseEvent) => {
+  const handleDoubleClick = (fashionId: string, e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    handleLike(restaurantId)
+    handleLike(fashionId)
   }
 
   // Handle offer overlay toggle
-  const toggleOfferOverlay = (restaurantId: string, e: React.MouseEvent) => {
+  const toggleOfferOverlay = (fashionId: string, e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    setShowOfferOverlay(prev => prev === restaurantId ? null : restaurantId)
+    setShowOfferOverlay(prev => prev === fashionId ? null : fashionId)
   }
 
   useEffect(() => {
-    const fetchfashion = async () => {
+    const fetchFashions = async () => {
       try {
         setLoading(true)
         
@@ -117,35 +117,36 @@ export function RestaurantGrid() {
         const data = await response.json()
         
         if (data.success) {
-          const fashionData = data.data.fashion
-          setfashion(fashionData)
+          const raw = (data?.data?.fashion ?? data?.data?.fashions ?? []) as unknown
+          const fashionsData: Fashion[] = Array.isArray(raw) ? (raw as Fashion[]) : []
+          setFashions(fashionsData)
           
           // Convert coordinate strings to addresses
           const newAddressCache: { [key: string]: string } = {}
-          for (const restaurant of fashionData) {
-            if (restaurant.locationName) {
+          for (const fashion of fashionsData) {
+            if (fashion.locationName) {
               try {
-                const address = await convertCoordinateStringToAddress(restaurant.locationName)
-                newAddressCache[restaurant.id] = address
+                const address = await convertCoordinateStringToAddress(fashion.locationName)
+                newAddressCache[fashion.id] = address
               } catch (error) {
-                console.error('Error converting address for restaurant:', restaurant.id, error)
-                newAddressCache[restaurant.id] = restaurant.locationName
+                console.error('Error converting address for fashion:', fashion.id, error)
+                newAddressCache[fashion.id] = fashion.locationName
               }
             }
           }
           setAddressCache(newAddressCache)
         } else {
-          setError(data.error || 'Failed to fetch fashion')
+          setError(data.error || 'Failed to fetch fashions')
         }
       } catch (err) {
-        setError('Failed to fetch fashion')
-        console.error('Error fetching fashion:', err)
+        setError('Failed to fetch fashions')
+        console.error('Error fetching fashions:', err)
       } finally {
         setLoading(false)
       }
     }
 
-    fetchfashion()
+    fetchFashions()
   }, [latitude, longitude])
 
   if (loading) {
@@ -181,13 +182,13 @@ export function RestaurantGrid() {
     )
   }
 
-  if (fashion.length === 0) {
+  if (fashions.length === 0) {
     return (
       <div className="p-3 sm:p-4 lg:p-6">
         <div className="text-center py-12">
-          <p className="text-muted-foreground mb-4">No fashion found</p>
+          <p className="text-muted-foreground mb-4">No fashions found</p>
           <p className="text-sm text-muted-foreground">
-            Be the first to add a restaurant promotion!
+            Be the first to add a fashion promotion!
           </p>
         </div>
       </div>
@@ -199,8 +200,8 @@ export function RestaurantGrid() {
         <div className="mb-6 p-4 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="font-medium text-gray-800 dark:text-gray-100 mb-1">Find nearby fashion</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Allow location access to see fashion sorted by distance</p>
+              <h3 className="font-medium text-gray-800 dark:text-gray-100 mb-1">Find nearby fashions</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Allow location access to see fashions sorted by distance</p>
             </div>
             <Button 
               onClick={getCurrentPosition}
@@ -215,80 +216,80 @@ export function RestaurantGrid() {
         </div>
       )}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
-        {fashion.map((restaurant) => (
-          <Link key={restaurant.id} href={`/fashion/${restaurant.id}`}>
+        {fashions.map((fashion) => (
+          <Link key={fashion.id} href={`/fashion/${fashion.id}`}>
             <Card className="group cursor-pointer overflow-hidden border border-gray-200 dark:border-gray-700 hover:border-primary/50 transition-all duration-300 bg-card shadow-md hover:shadow-xl hover:shadow-blue-500/10 hover:scale-[1.02] hover:-translate-y-1 rounded-xl h-fit transform-gpu">
             {/* User Profile Header - Further reduced padding */}
             <div className="flex items-center gap-2 p-1 pb-0 pl-5">
               <div className="w-7 h-7 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700 flex-shrink-0 ">
-                {restaurant.author?.image ? (
+                {fashion.author?.image ? (
                   <Image
-                    src={restaurant.author.image}
-                    alt={restaurant.author?.name || "User"}
+                    src={fashion.author.image}
+                    alt={fashion.author?.name || "User"}
                     width={28}
                     height={28}
                     className="w-full h-full object-cover "
                   />
                 ) : (
                   <div className="w-full h-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white text-xs font-semibold">
-                    {(restaurant.author?.name || "U").charAt(0).toUpperCase()}
+                    {(fashion.author?.name || "U").charAt(0).toUpperCase()}
                   </div>
                 )}
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-semibold text-gray-900 dark:text-gray-100 truncate">
-                  @{restaurant.author?.name || "FashionFindsbySarah"}
+                  @{fashion.author?.name || "FashionFindsbySarah"}
                 </p>
               </div>
               <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1 pr-5">
-                {restaurant.distance !== undefined && (
+                {fashion.distance !== undefined && (
                   <>
                     <MapPin className="h-3 w-3" />
-                    <span>{formatDistance(restaurant.distance)}</span>
+                    <span>{formatDistance(fashion.distance)}</span>
                   </>
                 )}
               </div>
             </div>
 
-            {/* Restaurant Image with Offer Overlay - Reduced height */}
+            {/* Fashion Image with Offer Overlay - Reduced height */}
             <div className="relative overflow-hidden">
               <Image
-                src={restaurant.images[0] || "/placeholder.svg"}
-                alt={restaurant.title}
+                src={fashion.images[0] || "/placeholder.svg"}
+                alt={fashion.title}
                 width={400}
                 height={180}
                 className="w-full h-32 sm:h-36 object-cover transition-transform duration-300 group-hover:scale-105"
-                onDoubleClick={(e) => handleDoubleClick(restaurant.id, e)}
+                onDoubleClick={(e) => handleDoubleClick(fashion.id, e)}
               />
               
               {/* Offer Badge */}
-              {(restaurant.offers.length > 0 || restaurant.promotionOfferTag) && (
+              {(fashion.offers.length > 0 || fashion.promotionOfferTag) && (
                 <div className="absolute top-2 left-2">
                   <button
                     onClick={(e) => {
                       e.preventDefault()
                       e.stopPropagation()
-                      toggleOfferOverlay(restaurant.id, e)
+                      toggleOfferOverlay(fashion.id, e)
                     }}
                     className="bg-orange-500 hover:bg-orange-600 text-white px-2 py-1 rounded-full text-xs font-bold flex items-center gap-1 shadow-lg transition-all duration-200"
                   >
                     <Tag className="h-3 w-3" />
-                    {restaurant.promotionOfferTag || "GREAT OFFERS"}
+                    {fashion.promotionOfferTag || "GREAT OFFERS"}
                   </button>
                   
                   {/* Offer Overlay */}
-                  {showOfferOverlay === restaurant.id && (
+                  {showOfferOverlay === fashion.id && (
                     <div className="absolute top-full left-0 mt-2 bg-black/90 text-white p-3 rounded-lg shadow-xl z-10 min-w-[200px]">
-                      {restaurant.offers.length > 0 ? (
+                      {fashion.offers.length > 0 ? (
                         <>
-                          <p className="text-sm font-semibold mb-1">{restaurant.offers[0].title}</p>
-                          <p className="text-xs text-gray-300">{restaurant.offers[0].description}</p>
-                          {restaurant.offers[0].validTill && (
-                            <p className="text-xs text-orange-300 mt-1">Valid till: {restaurant.offers[0].validTill}</p>
+                          <p className="text-sm font-semibold mb-1">{fashion.offers[0].title}</p>
+                          <p className="text-xs text-gray-300">{fashion.offers[0].description}</p>
+                          {fashion.offers[0].validTill && (
+                            <p className="text-xs text-orange-300 mt-1">Valid till: {fashion.offers[0].validTill}</p>
                           )}
                         </>
                       ) : (
-                        <p className="text-sm font-semibold">{restaurant.promotionOfferTag}</p>
+                        <p className="text-sm font-semibold">{fashion.promotionOfferTag}</p>
                       )}
                     </div>
                   )}
@@ -300,23 +301,23 @@ export function RestaurantGrid() {
             <div className="p-2">
               {/* Title - Increased size */}
               <h3 className="font-bold text-gray-900 dark:text-gray-100 text-lg mb-1 line-clamp-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
-                {restaurant.title}
+                {fashion.title}
               </h3>
               
               {/* Location - Reduced margin */}
               <div className="flex items-center gap-1 mb-1">
                 <MapPin className="h-3 w-3 text-gray-500" />
                 <span className="text-xs text-gray-600 dark:text-gray-400 truncate">
-                  {addressCache[restaurant.id] || restaurant.locationName}
+                  {addressCache[fashion.id] || fashion.locationName}
                 </span>
               </div>
 
               {/* Special Offer Text - Dynamic from database */}
-              {restaurant.offers.length > 0 && (
+              {fashion.offers.length > 0 && (
                 <div className="mb-2">
                   <p className="text-xs text-orange-600 dark:text-orange-400 font-medium flex items-center gap-1">
                     <span>💡</span>
-                    Special Offer: {restaurant.offers[0].title}
+                    Special Offer: {fashion.offers[0].title}
                   </p>
                 </div>
               )}
@@ -328,15 +329,15 @@ export function RestaurantGrid() {
                     onClick={(e) => {
                       e.preventDefault()
                       e.stopPropagation()
-                      handleLike(restaurant.id, e)
+                      handleLike(fashion.id, e)
                     }}
                     className="flex items-center gap-1 hover:scale-110 transition-transform"
                   >
                     <Heart 
-                      className={`h-4 w-4 ${likedPosts.has(restaurant.id) ? 'fill-red-500 text-red-500' : 'text-gray-600 dark:text-gray-400'}`}
+                      className={`h-4 w-4 ${likedPosts.has(fashion.id) ? 'fill-red-500 text-red-500' : 'text-gray-600 dark:text-gray-400'}`}
                     />
                     <span className="text-xs text-gray-600 dark:text-gray-400">
-                      {likedPosts.has(restaurant.id) ? restaurant.likesCount + 1 : restaurant.likesCount}
+                      {likedPosts.has(fashion.id) ? fashion.likesCount + 1 : fashion.likesCount}
                     </span>
                   </button>
                   
