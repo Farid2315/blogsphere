@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Heart, MessageCircle, Share, MapPin, Tag } from "lucide-react"
+import { Heart, MessageCircle, Share, MapPin, Tag, ChevronLeft, ChevronRight } from "lucide-react"
 import Image from "next/image"
 import { useEffect, useState } from "react"
 import { convertCoordinateStringToAddress } from "@/utils/coordinate-converter"
@@ -251,50 +251,45 @@ export function FashionGrid() {
               </div>
             </div>
 
-            {/* Fashion Image with Offer Overlay - Reduced height */}
-            <div className="relative overflow-hidden">
-              <Image
-                src={fashion.images[0] || "/placeholder.svg"}
-                alt={fashion.title}
-                width={400}
-                height={180}
-                className="w-full h-32 sm:h-36 object-cover transition-transform duration-300 group-hover:scale-105"
-                onDoubleClick={(e) => handleDoubleClick(fashion.id, e)}
-              />
-              
-              {/* Offer Badge */}
-              {(fashion.offers.length > 0 || fashion.promotionOfferTag) && (
-                <div className="absolute top-2 left-2">
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault()
-                      e.stopPropagation()
-                      toggleOfferOverlay(fashion.id, e)
-                    }}
-                    className="bg-orange-500 hover:bg-orange-600 text-white px-2 py-1 rounded-full text-xs font-bold flex items-center gap-1 shadow-lg transition-all duration-200"
-                  >
-                    <Tag className="h-3 w-3" />
-                    {fashion.promotionOfferTag || "GREAT OFFERS"}
-                  </button>
-                  
-                  {/* Offer Overlay */}
-                  {showOfferOverlay === fashion.id && (
-                    <div className="absolute top-full left-0 mt-2 bg-black/90 text-white p-3 rounded-lg shadow-xl z-10 min-w-[200px]">
-                      {fashion.offers.length > 0 ? (
-                        <>
-                          <p className="text-sm font-semibold mb-1">{fashion.offers[0].title}</p>
-                          <p className="text-xs text-gray-300">{fashion.offers[0].description}</p>
-                          {fashion.offers[0].validTill && (
-                            <p className="text-xs text-orange-300 mt-1">Valid till: {fashion.offers[0].validTill}</p>
-                          )}
-                        </>
-                      ) : (
-                        <p className="text-sm font-semibold">{fashion.promotionOfferTag}</p>
-                      )}
-                    </div>
-                  )}
-                </div>
-              )}
+            {/* Fashion Image slider with two visible images and arrows */}
+            <div className="relative overflow-hidden" onDoubleClick={(e) => handleDoubleClick(fashion.id, e)}>
+              {(() => {
+                const images = fashion.images && fashion.images.length > 0 ? fashion.images : ["/placeholder.svg"]
+                return (
+                  <CardImageSliderFashion images={images}>
+                    {(fashion.offers.length > 0 || fashion.promotionOfferTag) && (
+                      <div className="absolute top-2 left-2">
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault()
+                            e.stopPropagation()
+                            toggleOfferOverlay(fashion.id, e)
+                          }}
+                          className="bg-orange-500 hover:bg-orange-600 text-white px-2 py-1 rounded-full text-xs font-bold flex items-center gap-1 shadow-lg transition-all duration-200"
+                        >
+                          <Tag className="h-3 w-3" />
+                          {fashion.promotionOfferTag || "GREAT OFFERS"}
+                        </button>
+                        {showOfferOverlay === fashion.id && (
+                          <div className="absolute top-full left-0 mt-2 bg-black/90 text-white p-3 rounded-lg shadow-xl z-10 min-w-[200px]">
+                            {fashion.offers.length > 0 ? (
+                              <>
+                                <p className="text-sm font-semibold mb-1">{fashion.offers[0].title}</p>
+                                <p className="text-xs text-gray-300">{fashion.offers[0].description}</p>
+                                {fashion.offers[0].validTill && (
+                                  <p className="text-xs text-orange-300 mt-1">Valid till: {fashion.offers[0].validTill}</p>
+                                )}
+                              </>
+                            ) : (
+                              <p className="text-sm font-semibold">{fashion.promotionOfferTag}</p>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </CardImageSliderFashion>
+                )
+              })()}
             </div>
 
             {/* Content Section - Reduced padding */}
@@ -376,6 +371,59 @@ export function FashionGrid() {
           </Link>
         ))}
       </div>
+    </div>
+  )
+}
+
+function CardImageSliderFashion({ images, children }: { images: string[]; children?: React.ReactNode }) {
+  const [index, setIndex] = useState(0)
+  const img1 = images[index % images.length] || "/placeholder.svg"
+  const img2 = images[(index + 1) % images.length] || "/placeholder.svg"
+
+  const prev = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIndex((i) => (i - 1 + images.length) % images.length)
+  }
+  const next = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIndex((i) => (i + 1) % images.length)
+  }
+
+  return (
+    <div className="relative">
+      <div className="flex">
+        <Image
+          src={img1}
+          alt="Fashion image"
+          width={200}
+          height={180}
+          className="w-1/2 h-32 sm:h-36 object-cover transition-transform duration-300 group-hover:scale-105"
+        />
+        <Image
+          src={img2}
+          alt="Fashion image"
+          width={200}
+          height={180}
+          className="w-1/2 h-32 sm:h-36 object-cover transition-transform duration-300 group-hover:scale-105"
+        />
+      </div>
+      <button
+        aria-label="Previous image"
+        className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 text-white rounded-full p-1 hover:bg-black/60"
+        onClick={prev}
+      >
+        <ChevronLeft className="h-4 w-4" />
+      </button>
+      <button
+        aria-label="Next image"
+        className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 text-white rounded-full p-1 hover:bg-black/60"
+        onClick={next}
+      >
+        <ChevronRight className="h-4 w-4" />
+      </button>
+      {children}
     </div>
   )
 }

@@ -44,10 +44,10 @@ export async function GET(request: NextRequest) {
         pipeline: [
           {
             $match: {
-              domain: { $in: ["food", "restaurant"] },
-              location: { $exists: true }
+              domain: { $in: ["food", "restaurant"] }
             }
           },
+          
           {
             $lookup: {
               from: "users",
@@ -64,27 +64,120 @@ export async function GET(request: NextRequest) {
           },
           {
             $addFields: {
-              // Calculate approximate distance using Haversine formula
+              // Calculate distance using Haversine formula (returns kilometers)
               distance: {
-                $multiply: [
-                  earthRadius,
+                $let: {
+                  vars: {
+                    locLat: { $convert: { input: { $arrayElemAt: ["$location.coordinates", 1] }, to: "double", onError: null, onNull: null } },
+                    locLng: { $convert: { input: { $arrayElemAt: ["$location.coordinates", 0] }, to: "double", onError: null, onNull: null } }
+                  },
+                  in: {
+                    $cond: [
+                      { $and: [ { $ne: ["$$locLat", null] }, { $ne: ["$$locLng", null] } ] },
+                      {
+                        $multiply: [
+                          6371000,
+                          {
+                            $multiply: [
+                              2,
+                              {
+                                $asin: {
+                                  $sqrt: {
+                                    $add: [
+                                      { $pow: [ { $sin: { $divide: [ { $subtract: [ { $degreesToRadians: "$$locLat" }, { $degreesToRadians: lat } ] }, 2 ] } }, 2 ] },
+                                      { $multiply: [ { $cos: { $degreesToRadians: lat } }, { $cos: { $degreesToRadians: "$$locLat" } }, { $pow: [ { $sin: { $divide: [ { $subtract: [ { $degreesToRadians: "$$locLng" }, { $degreesToRadians: lng } ] }, 2 ] } }, 2 ] } ] }
+                                    ]
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      null
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          {
+            // Prefer branch coordinates when present to improve accuracy
+            $addFields: {
+              distance: {
+                $cond: [
+                  { $gt: [ { $size: "$branches" }, 0 ] },
                   {
-                    $acos: {
-                      $add: [
-                        {
-                          $multiply: [
-                            { $sin: { $multiply: [{ $degreesToRadians: lat }, 1] } },
-                            { $sin: { $multiply: [{ $degreesToRadians: { $arrayElemAt: ["$location.coordinates", 1] } }, 1] } }
-                          ]
-                        },
-                        {
-                          $multiply: [
-                            { $cos: { $multiply: [{ $degreesToRadians: lat }, 1] } },
-                            { $cos: { $multiply: [{ $degreesToRadians: { $arrayElemAt: ["$location.coordinates", 1] } }, 1] } },
-                            { $cos: { $multiply: [{ $degreesToRadians: { $subtract: [lng, { $arrayElemAt: ["$location.coordinates", 0] }] } }, 1] } }
-                          ]
+                    $let: {
+                      vars: { branch: { $first: "$branches" } },
+                      in: {
+                        $let: {
+                          vars: {
+                            bLat: { $convert: { input: "$$branch.latitude", to: "double", onError: null, onNull: null } },
+                            bLng: { $convert: { input: "$$branch.longitude", to: "double", onError: null, onNull: null } }
+                          },
+                          in: {
+                            $cond: [
+                              { $and: [ { $ne: ["$$bLat", null] }, { $ne: ["$$bLng", null] } ] },
+                              {
+                                $multiply: [
+                                  6371000,
+                                  {
+                                    $multiply: [
+                                      2,
+                                      {
+                                        $asin: {
+                                          $sqrt: {
+                                            $add: [
+                                              { $pow: [ { $sin: { $divide: [ { $subtract: [ { $degreesToRadians: "$$bLat" }, { $degreesToRadians: lat } ] }, 2 ] } }, 2 ] },
+                                              { $multiply: [ { $cos: { $degreesToRadians: lat } }, { $cos: { $degreesToRadians: "$$bLat" } }, { $pow: [ { $sin: { $divide: [ { $subtract: [ { $degreesToRadians: "$$bLng" }, { $degreesToRadians: lng } ] }, 2 ] } }, 2 ] } ] }
+                                            ]
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              null
+                            ]
+                          }
                         }
-                      ]
+                      }
+                    }
+                  },
+                  {
+                    $let: {
+                      vars: {
+                        locLat: { $convert: { input: { $arrayElemAt: ["$location.coordinates", 1] }, to: "double", onError: null, onNull: null } },
+                        locLng: { $convert: { input: { $arrayElemAt: ["$location.coordinates", 0] }, to: "double", onError: null, onNull: null } }
+                      },
+                      in: {
+                        $cond: [
+                          { $and: [ { $ne: ["$$locLat", null] }, { $ne: ["$$locLng", null] } ] },
+                          {
+                            $multiply: [
+                              6371000,
+                              {
+                                $multiply: [
+                                  2,
+                                  {
+                                    $asin: {
+                                      $sqrt: {
+                                        $add: [
+                                          { $pow: [ { $sin: { $divide: [ { $subtract: [ { $degreesToRadians: "$$locLat" }, { $degreesToRadians: lat } ] }, 2 ] } }, 2 ] },
+                                          { $multiply: [ { $cos: { $degreesToRadians: lat } }, { $cos: { $degreesToRadians: "$$locLat" } }, { $pow: [ { $sin: { $divide: [ { $subtract: [ { $degreesToRadians: "$$locLng" }, { $degreesToRadians: lng } ] }, 2 ] } }, 2 ] } ] }
+                                        ]
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          null
+                        ]
+                      }
                     }
                   }
                 ]
@@ -130,35 +223,45 @@ export async function GET(request: NextRequest) {
         pipeline: [
           {
             $match: {
-              domain: { $in: ["food", "restaurant"] },
-              location: { $exists: true }
+              domain: { $in: ["food", "restaurant"] }
             }
           },
           {
             $addFields: {
+              // Haversine formula for total count distance (kilometers)
               distance: {
-                $multiply: [
-                  earthRadius,
-                  {
-                    $acos: {
-                      $add: [
-                        {
-                          $multiply: [
-                            { $sin: { $multiply: [{ $degreesToRadians: lat }, 1] } },
-                            { $sin: { $multiply: [{ $degreesToRadians: { $arrayElemAt: ["$location.coordinates", 1] } }, 1] } }
-                          ]
-                        },
-                        {
-                          $multiply: [
-                            { $cos: { $multiply: [{ $degreesToRadians: lat }, 1] } },
-                            { $cos: { $multiply: [{ $degreesToRadians: { $arrayElemAt: ["$location.coordinates", 1] } }, 1] } },
-                            { $cos: { $multiply: [{ $degreesToRadians: { $subtract: [lng, { $arrayElemAt: ["$location.coordinates", 0] }] } }, 1] } }
-                          ]
-                        }
-                      ]
-                    }
+                $let: {
+                  vars: {
+                    locLat: { $convert: { input: { $arrayElemAt: ["$location.coordinates", 1] }, to: "double", onError: null, onNull: null } },
+                    locLng: { $convert: { input: { $arrayElemAt: ["$location.coordinates", 0] }, to: "double", onError: null, onNull: null } }
+                  },
+                  in: {
+                    $cond: [
+                      { $and: [ { $ne: ["$$locLat", null] }, { $ne: ["$$locLng", null] } ] },
+                      {
+                        $multiply: [
+                          6371000,
+                          {
+                            $multiply: [
+                              2,
+                              {
+                                $asin: {
+                                  $sqrt: {
+                                    $add: [
+                                      { $pow: [ { $sin: { $divide: [ { $subtract: [ { $degreesToRadians: "$$locLat" }, { $degreesToRadians: lat } ] }, 2 ] } }, 2 ] },
+                                      { $multiply: [ { $cos: { $degreesToRadians: lat } }, { $cos: { $degreesToRadians: "$$locLat" } }, { $pow: [ { $sin: { $divide: [ { $subtract: [ { $degreesToRadians: "$$locLng" }, { $degreesToRadians: lng } ] }, 2 ] } }, 2 ] } ] }
+                                    ]
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      null
+                    ]
                   }
-                ]
+                }
               }
             }
           },
