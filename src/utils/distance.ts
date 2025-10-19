@@ -50,7 +50,7 @@ export function formatDistance(distanceInMeters: number): string {
  * @param getCoordinates Function to extract coordinates from an item
  * @returns Sorted array with distance information
  */
-export function sortByDistance<T extends Record<string, any>>(
+export function sortByDistance<T extends Record<string, unknown>>(
   items: T[],
   userLocation: Coordinates,
   getCoordinates: (item: T) => Coordinates | null
@@ -88,7 +88,10 @@ export function sortByDistance<T extends Record<string, any>>(
  * @param item Restaurant or post object
  * @returns Coordinates if available, null otherwise
  */
-export function extractCoordinates(item: any): Coordinates | null {
+export function extractCoordinates(item: { 
+  branches?: Array<{ latitude?: number; longitude?: number }>; 
+  location?: { coordinates?: number[] } 
+}): Coordinates | null {
   // Check if item has branches with coordinates
   if (item.branches && item.branches.length > 0) {
     const branch = item.branches[0]; // Use first branch

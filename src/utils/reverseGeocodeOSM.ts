@@ -16,8 +16,9 @@ export async function getAddressFromCoordsOSM(latitude: number, longitude: numbe
     } else {
       throw new Error("No address found");
     }
-  } catch (error: any) {
-    console.error("OSM reverse geocode error:", error.message);
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error("OSM reverse geocode error:", errorMessage);
     throw new Error("Failed to fetch address");
   }
 }

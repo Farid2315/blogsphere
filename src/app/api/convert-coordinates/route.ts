@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { convertCoordinateStringToAddress, isCoordinateString } from '@/utils/coordinate-converter'
 
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
     // Get all posts with coordinate strings as locationName
     const posts = await prisma.post.findMany({

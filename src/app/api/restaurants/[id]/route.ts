@@ -103,7 +103,7 @@ export async function GET(
           }
         })
         authorData = author
-      } catch (error) {
+      } catch {
         console.log('Author not found for ID:', restaurant.authorId)
       }
     }

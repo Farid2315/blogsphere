@@ -168,11 +168,11 @@ export async function GET(request: NextRequest) {
       })
 
       const totalCount = Array.isArray(totalCountResult) && totalCountResult.length > 0 
-        ? (totalCountResult[0] as any).total 
+        ? (totalCountResult[0] as { total: number }).total 
         : 0
 
       return NextResponse.json({
-        posts: posts as any[],
+        posts: Array.isArray(posts) ? posts : [],
         pagination: {
           page,
           limit,
