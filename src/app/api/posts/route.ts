@@ -5,6 +5,7 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const domain = searchParams.get('domain')
+    const authorId = searchParams.get('authorId')
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '12')
     const lat = searchParams.get('lat')
@@ -12,6 +13,45 @@ export async function GET(request: NextRequest) {
     const radius = parseInt(searchParams.get('radius') || '10000') // 10km default
 
     const skip = (page - 1) * limit
+
+    // If authorId is provided, fetch posts by specific author
+    if (authorId) {
+      const posts = await prisma.post.findMany({
+        where: {
+          authorId: authorId
+        },
+        include: {
+          author: {
+            select: {
+              id: true,
+              name: true,
+              image: true
+            }
+          }
+        },
+        orderBy: {
+          createdAt: 'desc'
+        },
+        skip,
+        take: limit
+      })
+
+      const totalCount = await prisma.post.count({
+        where: {
+          authorId: authorId
+        }
+      })
+
+      return NextResponse.json({
+        posts,
+        pagination: {
+          page,
+          limit,
+          total: totalCount,
+          pages: Math.ceil(totalCount / limit)
+        }
+      })
+    }
 
     if (!domain) {
       return NextResponse.json({ error: 'Domain parameter is required' }, { status: 400 })

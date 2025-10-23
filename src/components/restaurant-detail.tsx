@@ -62,6 +62,13 @@ interface Restaurant {
     }
     createdAt: string
   }>
+  // Promotion window (optional; may come from Post model)
+  promotionStartDate?: string
+  promotionEndDate?: string
+  promotionStartTime?: string
+  promotionEndTime?: string
+  promotionOfferTag?: string
+  isPromotion?: boolean
 }
 
 export function RestaurantDetail({ restaurantId }: RestaurantDetailProps) {
@@ -191,6 +198,20 @@ export function RestaurantDetail({ restaurantId }: RestaurantDetailProps) {
             <div>
               <h2 className="text-xl font-semibold text-foreground mb-4">About</h2>
               <p className="text-muted-foreground">{restaurant.content}</p>
+              {/* Always show Offer Validity block */}
+              <div className="mt-4">
+                <h3 className="text-lg font-medium text-foreground mb-2">Offer Validity</h3>
+                <div className="text-sm text-muted-foreground space-y-1">
+                  <p>
+                    <span className="font-medium">From:</span>
+                    <span className="ml-2">{formatDate(restaurant.promotionStartDate)}{restaurant.promotionStartTime ? ` ${restaurant.promotionStartTime}` : ''}</span>
+                  </p>
+                  <p>
+                    <span className="font-medium">To:</span>
+                    <span className="ml-2">{formatDate(restaurant.promotionEndDate || restaurant.offers?.[0]?.validTill)}{restaurant.promotionEndTime ? ` ${restaurant.promotionEndTime}` : ''}</span>
+                  </p>
+                </div>
+              </div>
             </div>
           )}
 
@@ -372,4 +393,12 @@ export function RestaurantDetail({ restaurantId }: RestaurantDetailProps) {
       </div>
     </div>
   )
+}
+
+// Helper to format date safely
+const formatDate = (value?: string) => {
+  if (!value) return 'N/A'
+  const d = new Date(value)
+  if (isNaN(d.getTime())) return 'N/A'
+  return d.toLocaleDateString()
 }

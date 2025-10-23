@@ -35,6 +35,7 @@ model User {
 
   sessions          Session[]
   accounts          Account[]
+  profile           Profile?   @relation("UserProfile")
 
   @@map("users")
 }
@@ -49,9 +50,9 @@ model Post {
   content         String
   domain          String        // e.g. "food", "cloth", "trends", "tours", "random"
 
-  address         String?       // Human-readable address (e.g. "123 Main St, Koramangala, Bangalore")
+  address         String        // Human-readable address (e.g. "123 Main St, Koramangala, Bangalore") - MANDATORY
   locationName    String        // e.g. "Koramangala, Bangalore"
-  location        Location?     // GeoJSON Point for precise coordinates
+  location        Location      // GeoJSON Point for precise coordinates - MANDATORY
 
   // Engagement
   likesCount      Int           @default(0) // no of likes
@@ -71,10 +72,17 @@ model Post {
   timings         WeeklyTiming?
 
   // Offers
-  offers          Offer[]
-  promotionOfferTag String?    // e.g. "25% OFF ALL JEANS", "BUY 2 GET 1 FREE"
+  offers            Offer[]
+  promotionOfferTag String?      // e.g. "25% OFF ALL JEANS", "BUY 2 GET 1 FREE"
+  isPromotion       Boolean       @default(false) // whether this post is a promotion
+  promotionStartDate DateTime     // when the promotion starts - MANDATORY
+  promotionEndDate   DateTime     // when the promotion ends - MANDATORY
+  promotionStartTime String       // start time (HH:mm) - MANDATORY
+  promotionEndTime   String       // end time (HH:mm) - MANDATORY
+  featured          Boolean       @default(false) // whether this post is featured
+  
   // Media
-  images          String[]      // multiple image URLs
+  images            String[]      // multiple image URLs
 
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
@@ -218,4 +226,27 @@ model Verification {
   updatedAt  DateTime?
 
   @@map("verification")
+}
+
+/* ------------------- PROFILE MODEL ------------------- */
+model Profile {
+  id              String   @id @default(uuid()) @map("_id")
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], name: "UserProfile")
+  
+  bio             String?  // Instagram-like bio
+  followersCount  Int      @default(0)
+  followingCount  Int      @default(0)
+  postsCount      Int      @default(0)
+  collabsCount    Int      @default(0)
+  
+  // Social media links
+  instagramHandle String?
+  youtubeHandle   String?
+  websiteUrl      String?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@map("profiles")
 }

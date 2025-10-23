@@ -69,6 +69,25 @@ export async function POST(req: Request) {
     if (!body.domain) {
       return NextResponse.json({ error: "Category is required" }, { status: 400 });
     }
+    
+    // Validate mandatory date/time fields
+    if (!body.startDate) {
+      return NextResponse.json({ error: "Start date is required" }, { status: 400 });
+    }
+    if (!body.endDate) {
+      return NextResponse.json({ error: "End date is required" }, { status: 400 });
+    }
+    if (!body.startTime?.trim()) {
+      return NextResponse.json({ error: "Start time is required" }, { status: 400 });
+    }
+    if (!body.endTime?.trim()) {
+      return NextResponse.json({ error: "End time is required" }, { status: 400 });
+    }
+    
+    // Validate mandatory coordinates
+    if (!body.location || typeof body.location.latitude !== 'number' || typeof body.location.longitude !== 'number') {
+      return NextResponse.json({ error: "Coordinates (latitude and longitude) are required" }, { status: 400 });
+    }
 
     // transform location to GeoJSON
     const locationGeo = body.location
@@ -89,10 +108,15 @@ export async function POST(req: Request) {
         title: body.title,
         content: body.content ?? "",
         domain: body.domain,
-        address: body.address ?? null, // Include address field
+        address: body.address, // Include address field - now required
         locationName: body.locationName,
         promotionOfferTag: body.offerTag, // Store offer tag in Post model
-        location: locationGeo as { type: string; coordinates: number[] }, // prisma composite type -> MongoDB doc
+        isPromotion: !!body.offerTag || !!body.startDate || !!body.endDate,
+        promotionStartDate: new Date(body.startDate), // Now required
+        promotionEndDate: new Date(body.endDate), // Now required
+        promotionStartTime: body.startTime, // Now required
+        promotionEndTime: body.endTime, // Now required
+        location: locationGeo as { type: string; coordinates: number[] }, // Now required
         likesCount: 0,
         sharesCount: 0,
         rating: 0,
@@ -109,8 +133,6 @@ export async function POST(req: Request) {
           link: offer.link,
         })),
         images: body.images ?? [],
-        // Note: startDate, endDate, startTime, endTime are not stored in the database schema
-        // They are accepted in the API but not persisted
       },
     });
 

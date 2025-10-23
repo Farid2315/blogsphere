@@ -57,6 +57,13 @@ export async function GET(
         images: true,
         createdAt: true,
         updatedAt: true,
+        // Promotion validity fields
+        promotionOfferTag: true,
+        isPromotion: true,
+        promotionStartDate: true,
+        promotionEndDate: true,
+        promotionStartTime: true,
+        promotionEndTime: true,
         authorId: true, // Include authorId to check if author exists
         comments: {
           select: {

@@ -118,6 +118,38 @@ export function CreatePromotionPage() {
       alert("Please enter an address");
       return;
     }
+    
+    // Validate mandatory date/time fields
+    if (!startDate) {
+      alert("Please select a start date");
+      return;
+    }
+    if (!endDate) {
+      alert("Please select an end date");
+      return;
+    }
+    if (!startTime.trim()) {
+      alert("Please select a start time");
+      return;
+    }
+    if (!endTime.trim()) {
+      alert("Please select an end time");
+      return;
+    }
+    
+    // Validate mandatory coordinates
+    if (!latitude.trim() || !longitude.trim()) {
+      alert("Please provide coordinates (latitude and longitude). Use the location button to get your current location.");
+      return;
+    }
+    
+    // Validate coordinate values are numbers
+    const lat = parseFloat(latitude);
+    const lng = parseFloat(longitude);
+    if (isNaN(lat) || isNaN(lng)) {
+      alert("Please provide valid numeric coordinates");
+      return;
+    }
 
     setSubmitting(true);
     const payload = buildPayload();
@@ -261,7 +293,7 @@ export function CreatePromotionPage() {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <label className="text-foreground font-medium text-lg">
-                  Coordinates
+                  Coordinates <span className="text-red-500">*</span>
                 </label>
                 <LocationButton onGot={onGotCoords} />
               </div>
@@ -305,7 +337,7 @@ export function CreatePromotionPage() {
             <div className="space-y-2">
               <label className="text-foreground font-medium text-lg flex items-center gap-2">
                 <Calendar className="w-5 h-5 text-primary" />
-                Start Date
+                Start Date <span className="text-red-500">*</span>
               </label>
               <Popover>
                 <PopoverTrigger asChild>
@@ -335,7 +367,7 @@ export function CreatePromotionPage() {
             <div className="space-y-2">
               <label className="text-foreground font-medium text-lg flex items-center gap-2">
                 <Calendar className="w-5 h-5 text-primary" />
-                End Date
+                End Date <span className="text-red-500">*</span>
               </label>
               <Popover>
                 <PopoverTrigger asChild>
@@ -365,7 +397,7 @@ export function CreatePromotionPage() {
             <div className="space-y-2">
               <label className="text-foreground font-medium text-lg flex items-center gap-2">
                 <Clock className="w-5 h-5 text-primary" />
-                Start Time
+                Start Time <span className="text-red-500">*</span>
               </label>
               <Popover>
                 <PopoverTrigger asChild>
@@ -424,7 +456,7 @@ export function CreatePromotionPage() {
             <div className="space-y-2">
               <label className="text-foreground font-medium text-lg flex items-center gap-2">
                 <Clock className="w-5 h-5 text-primary" />
-                End Time
+                End Time <span className="text-red-500">*</span>
               </label>
               <Popover>
                 <PopoverTrigger asChild>
