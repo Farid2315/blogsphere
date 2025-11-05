@@ -6,96 +6,103 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Bookmark } from "lucide-react"
 
-const gamingItems = [
+const gamings = [
   {
     id: 1,
-    name: "Gaming Arena",
+    name: "Gaming Name",
     location: "Location",
-    image: "/gaming-setup.png",
-    offer: "Gaming sessions 50% off, free snacks with 3+ hour bookings..T&C",
+    image: "/modern-gaming-interior.png",
+    offer: "offer type like 50% or by 1 get 1 or launch offer etc..T&C",
   },
   {
     id: 2,
-    name: "Esports Center",
+    name: "Gaming Name",
     location: "Location",
-    image: "/gaming-setup.png",
-    offer: "Tournament entry 40% off, coaching sessions included..T&C",
+    image: "/elegant-gaming-dining.png",
+    offer: "offer type like 50% or by 1 get 1 or launch offer etc..T&C",
   },
   {
     id: 3,
-    name: "VR Experience",
+    name: "Gaming Name",
     location: "Location",
-    image: "/gaming-setup.png",
-    offer: "VR gaming packages 60% off, group discounts available..T&C",
+    image: "/placeholder-6p0x1.png",
+    offer: "offer type like 50% or by 1 get 1 or launch offer etc..T&C",
   },
   {
     id: 4,
-    name: "Retro Arcade",
+    name: "Gaming Name",
     location: "Location",
-    image: "/gaming-setup.png",
-    offer: "All-day arcade pass 35% off, vintage game tournaments..T&C",
+    image: "/fine-dining-gaming.png",
+    offer: "offer type like 50% or by 1 get 1 or launch offer etc..T&C",
   },
   {
     id: 5,
-    name: "Console Lounge",
+    name: "gaming Name",
     location: "Location",
-    image: "/gaming-setup.png",
-    offer: "Console gaming 45% off, multiplayer sessions included..T&C",
+    image: "/placeholder-2em4e.png",
+    offer: "offer type like 50% or by 1 get 1 or launch offer etc..T&C",
   },
   {
     id: 6,
-    name: "PC Gaming Hub",
+    name: "Gaming Name",
     location: "Location",
-    image: "/gaming-setup.png",
-    offer: "High-end PC gaming 55% off, streaming setup available..T&C",
+    image: "/trendy-gaming-interior.png",
+    offer: "offer type like 50% or by 1 get 1 or launch offer etc..T&C",
   },
 ]
 
 export function GamingGrid() {
   return (
-    <div className="p-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {gamingItems.map((item) => (
-          <Link key={item.id} href={`/gaming/${item.id}`}>
-            <Card className="group cursor-pointer overflow-hidden border-2 border-red-500/20 hover:border-red-500/40 transition-all duration-300 bg-card">
-              <div className="relative px-2">
-                <img src={item.image || "/placeholder.svg"} alt={item.name} className="w-full h-48 object-cover" />
+    <div className="p-3 sm:p-4 lg:p-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
+        {gamings.map((gaming) => (
+          <Link key={gaming.id} href={`/gaming/${gaming.id}`}>
+            <Card className="group cursor-pointer overflow-hidden border-2 border-gray-500/20 hover:border-gray-500/40 transition-all duration-300 bg-card">
+              <div className="relative">
+                <Image
+                  src={gaming.image || "/placeholder.svg"}
+                  alt={gaming.name}
+                  width={400}
+                  height={192}
+                  className="w-full h-40 sm:h-48 object-cover"
+                />
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="absolute top-2 right-2 bg-black/50 hover:bg-black/70 text-white"
+                  className="absolute top-2 right-2 bg-black/50 hover:bg-black/70 text-white h-8 w-8 sm:h-10 sm:w-10"
                   onClick={(e) => {
                     e.preventDefault()
+                    // Handle bookmark
                   }}
                 >
-                  <Bookmark className="h-4 w-4" />
+                  <Bookmark className="h-3 w-3 sm:h-4 sm:w-4" />
                 </Button>
               </div>
-              <CardContent className="p-4">
+              <CardContent className="p-3 sm:p-4">
                 <div className="flex justify-between items-start mb-2">
-                  <div>
-                    <h3 className="font-semibold text-foreground">{item.name}</h3>
-                    <p className="text-sm text-muted-foreground">{item.location}</p>
+                  <div className="min-w-0 flex-1">
+                    <h3 className="font-semibold text-foreground text-sm sm:text-base truncate">{gaming.name}</h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground truncate">{gaming.location}</p>
                   </div>
-                  <div className="text-xs text-muted-foreground">rating</div>
+                  <div className="text-xs text-muted-foreground ml-2">rating</div>
                 </div>
 
-                <div className="mb-4">
-                  <h4 className="text-sm font-medium text-foreground mb-1">Offer:</h4>
-                  <p className="text-xs text-muted-foreground">{item.offer}</p>
+                <div className="mb-3 sm:mb-4">
+                  <h4 className="text-xs sm:text-sm font-medium text-foreground mb-1">Offer:</h4>
+                  <p className="text-xs text-muted-foreground line-clamp-2">{gaming.offer}</p>
                 </div>
 
-                <div className="flex gap-2">
+                <div className="flex flex-col xs:flex-row gap-2">
                   <Button
                     size="sm"
-                    className="bg-primary hover:bg-primary/90 text-primary-foreground flex-1"
+                    className="bg-purple-600 hover:bg-purple-700 text-white flex-1 text-xs sm:text-sm"
                     onClick={(e) => e.preventDefault()}
                   >
                     @userld
                   </Button>
                   <Button
                     size="sm"
-                    className="bg-primary hover:bg-primary/90 text-primary-foreground flex-1"
+                    className="bg-purple-600 hover:bg-purple-700 text-white flex-1 text-xs sm:text-sm"
                     onClick={(e) => e.preventDefault()}
                   >
                     @userld

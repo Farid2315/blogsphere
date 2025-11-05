@@ -1,5 +1,5 @@
-import { AppLayout } from "@/components/layout/app-layout"
-import { GamingDetail } from "../_comps/gaming-detail"
+import { AppLayout } from "../../../../components/layout/app-layout"
+import { GamingDetail } from "../../../../components/gaming-detail"
 
 interface GamingPageProps {
   params: {
@@ -9,8 +9,8 @@ interface GamingPageProps {
 
 export default function GamingPage({ params }: GamingPageProps) {
   return (
-    <AppLayout title="Gaming Item">
-      <GamingDetail />
+    <AppLayout title="Gaming Details">
+      <GamingDetail gamingId={params.id} />
     </AppLayout>
   )
 }

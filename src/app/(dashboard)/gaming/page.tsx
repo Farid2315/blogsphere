@@ -1,10 +1,10 @@
 import { AppLayout } from "../../../components/layout/app-layout"
-import { FashionGrid } from "../../../components/fashion-grid"
+import { GamingGrid } from "../../../components/gaming-grid"
 
-export default function FashionPage() {
+export default function GamingPage() {
   return (
-    <AppLayout title="Fashion & Entertainment">
-      <FashionGrid />
+    <AppLayout title="Gaming & Style">
+      <GamingGrid />
     </AppLayout>
   )
 }
