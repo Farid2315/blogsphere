@@ -10,7 +10,7 @@ import { convertCoordinateStringToAddress } from "@/utils/coordinate-converter"
 import { useGeolocation } from "@/hooks/use-geolocation"
 import { formatDistance } from "@/utils/distance"
 
-interface Tech {
+interface Gaming {
   id: string
   title: string
   content: string
@@ -54,8 +54,8 @@ interface Tech {
   }
 }
 
-export function TechGrid() {
-  const [techs, setTechs] = useState<Tech[]>([])
+export function GamingGrid() {
+  const [gamings, setGamings] = useState<Gaming[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [addressCache, setAddressCache] = useState<{ [key: string]: string }>({})
@@ -64,43 +64,43 @@ export function TechGrid() {
   const { latitude, longitude, getCurrentPosition } = useGeolocation()
 
   // Handle like functionality
-  const handleLike = (techId: string, e?: React.MouseEvent) => {
+  const handleLike = (gamingId: string, e?: React.MouseEvent) => {
     if (e) {
       e.preventDefault()
       e.stopPropagation()
     }
     setLikedPosts(prev => {
       const newLiked = new Set(prev)
-      if (newLiked.has(techId)) {
-        newLiked.delete(techId)
+      if (newLiked.has(gamingId)) {
+        newLiked.delete(gamingId)
       } else {
-        newLiked.add(techId)
+        newLiked.add(gamingId)
       }
       return newLiked
     })
   }
 
   // Handle double click on image
-  const handleDoubleClick = (techId: string, e: React.MouseEvent) => {
+  const handleDoubleClick = (gamingId: string, e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    handleLike(techId)
+    handleLike(gamingId)
   }
 
   // Handle offer overlay toggle
-  const toggleOfferOverlay = (techId: string, e: React.MouseEvent) => {
+  const toggleOfferOverlay = (gamingId: string, e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    setShowOfferOverlay(prev => prev === techId ? null : techId)
+    setShowOfferOverlay(prev => prev === gamingId ? null : gamingId)
   }
 
   useEffect(() => {
-    const fetchTechs = async () => {
+    const fetchGamings = async () => {
       try {
         setLoading(true)
         
         // Build API URL with location parameters if available
-        let apiUrl = '/api/tech'
+        let apiUrl = '/api/gaming'
         const params = new URLSearchParams()
         
         if (latitude && longitude) {
@@ -117,36 +117,36 @@ export function TechGrid() {
         const data = await response.json()
         
         if (data.success) {
-          const raw = (data?.data?.tech ?? data?.data?.techs ?? []) as unknown
-          const techsData: Tech[] = Array.isArray(raw) ? (raw as Tech[]) : []
-          setTechs(techsData)
+          const raw = (data?.data?.gaming ?? data?.data?.gamings ?? []) as unknown
+          const gamingsData: Gaming[] = Array.isArray(raw) ? (raw as Gaming[]) : []
+          setGamings(gamingsData)
           
           // Convert coordinate strings to addresses
           const newAddressCache: { [key: string]: string } = {}
-          for (const tech of techsData) {
-            if (tech.locationName) {
+          for (const gaming of gamingsData) {
+            if (gaming.locationName) {
               try {
-                const address = await convertCoordinateStringToAddress(tech.locationName)
-                newAddressCache[tech.id] = address
+                const address = await convertCoordinateStringToAddress(gaming.locationName)
+                newAddressCache[gaming.id] = address
               } catch (error) {
-                console.error('Error converting address for tech:', tech.id, error)
-                newAddressCache[tech.id] = tech.locationName
+                console.error('Error converting address for gaming:', gaming.id, error)
+                newAddressCache[gaming.id] = gaming.locationName
               }
             }
           }
           setAddressCache(newAddressCache)
         } else {
-          setError(data.error || 'Failed to fetch techs')
+          setError(data.error || 'Failed to fetch gamings')
         }
       } catch (err) {
-        setError('Failed to fetch techs')
-        console.error('Error fetching techs:', err)
+        setError('Failed to fetch gamings')
+        console.error('Error fetching gamings:', err)
       } finally {
         setLoading(false)
       }
     }
 
-    fetchTechs()
+    fetchGamings()
   }, [latitude, longitude])
 
   if (loading) {
@@ -182,13 +182,13 @@ export function TechGrid() {
     )
   }
 
-  if (techs.length === 0) {
+  if (gamings.length === 0) {
     return (
       <div className="p-3 sm:p-4 lg:p-6">
         <div className="text-center py-12">
-          <p className="text-muted-foreground mb-4">No techs found</p>
+          <p className="text-muted-foreground mb-4">No gamings found</p>
           <p className="text-sm text-muted-foreground">
-            Be the first to add a tech promotion!
+            Be the first to add a gaming promotion!
           </p>
         </div>
       </div>
@@ -200,8 +200,8 @@ export function TechGrid() {
         <div className="mb-6 p-4 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="font-medium text-gray-800 dark:text-gray-100 mb-1">Find nearby techs</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Allow location access to see techs sorted by distance</p>
+              <h3 className="font-medium text-gray-800 dark:text-gray-100 mb-1">Find nearby gamings</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Allow location access to see gamings sorted by distance</p>
             </div>
             <Button 
               onClick={getCurrentPosition}
@@ -216,78 +216,78 @@ export function TechGrid() {
         </div>
       )}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
-        {techs.map((tech) => (
-          <Link key={tech.id} href={`/tech/${tech.id}`}>
+        {gamings.map((gaming) => (
+          <Link key={gaming.id} href={`/gaming/${gaming.id}`}>
             <Card className="group cursor-pointer overflow-hidden border border-gray-200 dark:border-gray-700 hover:border-primary/50 transition-all duration-300 bg-card shadow-md hover:shadow-xl hover:shadow-blue-500/10 hover:scale-[1.02] hover:-translate-y-1 rounded-xl h-fit transform-gpu">
             {/* User Profile Header - Further reduced padding */}
             <div className="flex items-center gap-2 p-1 pb-0 pl-5">
               <div className="w-7 h-7 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700 flex-shrink-0 ">
-                {tech.author?.image ? (
+                {gaming.author?.image ? (
                   <Image
-                    src={tech.author.image}
-                    alt={tech.author?.name || "User"}
+                    src={gaming.author.image}
+                    alt={gaming.author?.name || "User"}
                     width={28}
                     height={28}
                     className="w-full h-full object-cover "
                   />
                 ) : (
                   <div className="w-full h-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white text-xs font-semibold">
-                    {(tech.author?.name || "U").charAt(0).toUpperCase()}
+                    {(gaming.author?.name || "U").charAt(0).toUpperCase()}
                   </div>
                 )}
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-semibold text-gray-900 dark:text-gray-100 truncate">
-                  @{tech.author?.name || "TechFindsbySarah"}
+                  @{gaming.author?.name || "GamingFindsbySarah"}
                 </p>
               </div>
               <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1 pr-5">
-                {tech.distance !== undefined && (
+                {gaming.distance !== undefined && (
                   <>
                     <MapPin className="h-3 w-3" />
-                    <span>{formatDistance(tech.distance)}</span>
+                    <span>{formatDistance(gaming.distance)}</span>
                   </>
                 )}
               </div>
             </div>
 
-            {/* Tech Image slider with two visible images and arrows */}
-            <div className="relative overflow-hidden" onDoubleClick={(e) => handleDoubleClick(tech.id, e)}>
+            {/* Gaming Image slider with two visible images and arrows */}
+            <div className="relative overflow-hidden" onDoubleClick={(e) => handleDoubleClick(gaming.id, e)}>
               {(() => {
-                const images = tech.images && tech.images.length > 0 ? tech.images : ["/placeholder.svg"]
+                const images = gaming.images && gaming.images.length > 0 ? gaming.images : ["/placeholder.svg"]
                 return (
-                  <CardImageSliderTech images={images}>
-                    {(tech.offers.length > 0 || tech.promotionOfferTag) && (
+                  <CardImageSliderGaming images={images}>
+                    {(gaming.offers.length > 0 || gaming.promotionOfferTag) && (
                       <div className="absolute top-2 left-2">
                         <button
                           onClick={(e) => {
                             e.preventDefault()
                             e.stopPropagation()
-                            toggleOfferOverlay(tech.id, e)
+                            toggleOfferOverlay(gaming.id, e)
                           }}
                           className="bg-orange-500 hover:bg-orange-600 text-white px-2 py-1 rounded-full text-xs font-bold flex items-center gap-1 shadow-lg transition-all duration-200"
                         >
                           <Tag className="h-3 w-3" />
-                          {tech.promotionOfferTag || "GREAT OFFERS"}
+                          {gaming.promotionOfferTag || "GREAT OFFERS"}
                         </button>
-                        {showOfferOverlay === tech.id && (
+                        {showOfferOverlay === gaming.id && (
                           <div className="absolute top-full left-0 mt-2 bg-black/90 text-white p-3 rounded-lg shadow-xl z-10 min-w-[200px]">
-                            {tech.offers.length > 0 ? (
+                            {gaming.offers.length > 0 ? (
                               <>
-                                <p className="text-sm font-semibold mb-1">{tech.offers[0].title}</p>
-                                <p className="text-xs text-gray-300">{tech.offers[0].description}</p>
-                                {tech.offers[0].validTill && (
-                                  <p className="text-xs text-orange-300 mt-1">Valid till: {tech.offers[0].validTill}</p>
+                                <p className="text-sm font-semibold mb-1">{gaming.offers[0].title}</p>
+                                <p className="text-xs text-gray-300">{gaming.offers[0].description}</p>
+                                {gaming.offers[0].validTill && (
+                                  <p className="text-xs text-orange-300 mt-1">Valid till: {gaming.offers[0].validTill}</p>
                                 )}
                               </>
                             ) : (
-                              <p className="text-sm font-semibold">{tech.promotionOfferTag}</p>
+                              <p className="text-sm font-semibold">{gaming.promotionOfferTag}</p>
                             )}
                           </div>
                         )}
                       </div>
                     )}
-                  </CardImageSliderTech>
+                  </CardImageSliderGaming>
                 )
               })()}
             </div>
@@ -296,23 +296,23 @@ export function TechGrid() {
             <div className="p-2">
               {/* Title - Increased size */}
               <h3 className="font-bold text-gray-900 dark:text-gray-100 text-lg mb-1 line-clamp-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
-                {tech.title}
+                {gaming.title}
               </h3>
               
               {/* Location - Reduced margin */}
               <div className="flex items-center gap-1 mb-1">
                 <MapPin className="h-3 w-3 text-gray-500" />
                 <span className="text-xs text-gray-600 dark:text-gray-400 truncate">
-                  {addressCache[tech.id] || tech.locationName}
+                  {addressCache[gaming.id] || gaming.locationName}
                 </span>
               </div>
 
               {/* Special Offer Text - Dynamic from database */}
-              {tech.offers.length > 0 && (
+              {gaming.offers.length > 0 && (
                 <div className="mb-2">
                   <p className="text-xs text-orange-600 dark:text-orange-400 font-medium flex items-center gap-1">
                     <span>💡</span>
-                    Special Offer: {tech.offers[0].title}
+                    Special Offer: {gaming.offers[0].title}
                   </p>
                 </div>
               )}
@@ -324,15 +324,15 @@ export function TechGrid() {
                     onClick={(e) => {
                       e.preventDefault()
                       e.stopPropagation()
-                      handleLike(tech.id, e)
+                      handleLike(gaming.id, e)
                     }}
                     className="flex items-center gap-1 hover:scale-110 transition-transform"
                   >
                     <Heart 
-                      className={`h-4 w-4 ${likedPosts.has(tech.id) ? 'fill-red-500 text-red-500' : 'text-gray-600 dark:text-gray-400'}`}
+                      className={`h-4 w-4 ${likedPosts.has(gaming.id) ? 'fill-red-500 text-red-500' : 'text-gray-600 dark:text-gray-400'}`}
                     />
                     <span className="text-xs text-gray-600 dark:text-gray-400">
-                      {likedPosts.has(tech.id) ? tech.likesCount + 1 : tech.likesCount}
+                      {likedPosts.has(gaming.id) ? gaming.likesCount + 1 : gaming.likesCount}
                     </span>
                   </button>
                   
@@ -375,7 +375,7 @@ export function TechGrid() {
   )
 }
 
-function CardImageSliderTech({ images, children }: { images: string[]; children?: React.ReactNode }) {
+function CardImageSliderGaming({ images, children }: { images: string[]; children?: React.ReactNode }) {
   const [index, setIndex] = useState(0)
   const img1 = images[index % images.length] || "/placeholder.svg"
   const img2 = images[(index + 1) % images.length] || "/placeholder.svg"
@@ -396,14 +396,14 @@ function CardImageSliderTech({ images, children }: { images: string[]; children?
       <div className="flex">
         <Image
           src={img1}
-          alt="Tech image"
+          alt="Gaming image"
           width={200}
           height={180}
           className="w-1/2 h-32 sm:h-36 object-cover transition-transform duration-300 group-hover:scale-105"
         />
         <Image
           src={img2}
-          alt="Tech image"
+          alt="Gaming image"
           width={200}
           height={180}
           className="w-1/2 h-32 sm:h-36 object-cover transition-transform duration-300 group-hover:scale-105"

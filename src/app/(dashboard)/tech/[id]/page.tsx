@@ -1,5 +1,5 @@
 import { AppLayout } from "../../../../components/layout/app-layout"
-import { TechDetail } from "../_comps/tech-detail"
+import { TechDetail } from "../../../../components/tech-detail"
 
 interface TechPageProps {
   params: {
@@ -9,7 +9,7 @@ interface TechPageProps {
 
 export default function TechPage({ params }: TechPageProps) {
   return (
-    <AppLayout title="Tech Product">
+    <AppLayout title="Tech Details">
       <TechDetail techId={params.id} />
     </AppLayout>
   )

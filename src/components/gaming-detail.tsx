@@ -8,11 +8,11 @@ import { useEffect, useState } from "react"
 import { AddressDisplay } from "@/components/AddressDisplay"
 import { convertCoordinateStringToAddress } from "@/utils/coordinate-converter"
 
-interface TechDetailProps {
-  techId: string
+interface GamingDetailProps {
+  gamingId: string
 }
 
-interface Tech {
+interface Gaming {
   id: string
   title: string
   content: string
@@ -64,39 +64,39 @@ interface Tech {
   }>
 }
 
-export function TechDetail({ techId }: TechDetailProps) {
-  const [tech, setTech] = useState<Tech | null>(null)
+export function GamingDetail({ gamingId }: GamingDetailProps) {
+  const [gaming, setGaming] = useState<Gaming | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [displayAddress, setDisplayAddress] = useState<string>("")
 
   useEffect(() => {
-    const fetchTech = async () => {
+    const fetchGaming = async () => {
       try {
         setLoading(true)
-        const response = await fetch(`/api/tech/${techId}`)
+        const response = await fetch(`/api/gaming/${gamingId}`)
         
         if (!response.ok) {
-          throw new Error('Failed to fetch tech details')
+          throw new Error('Failed to fetch gaming details')
         }
         
         const data = await response.json()
         if (data.success && data.data) {
-          const techData = data.data
-          setTech(techData)
+          const gamingData = data.data
+          setGaming(gamingData)
           
           // Convert coordinate string to address if needed
-          if (techData.locationName) {
+          if (gamingData.locationName) {
             try {
-              const address = await convertCoordinateStringToAddress(techData.locationName)
+              const address = await convertCoordinateStringToAddress(gamingData.locationName)
               setDisplayAddress(address)
             } catch (error) {
               console.error('Error converting address:', error)
-              setDisplayAddress(techData.locationName)
+              setDisplayAddress(gamingData.locationName)
             }
           }
         } else {
-          throw new Error(data.error || 'Failed to fetch tech details')
+          throw new Error(data.error || 'Failed to fetch gaming details')
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred')
@@ -105,10 +105,10 @@ export function TechDetail({ techId }: TechDetailProps) {
       }
     }
 
-    if (techId) {
-      fetchTech()
+    if (gamingId) {
+      fetchGaming()
     }
-  }, [techId])
+  }, [gamingId])
 
   if (loading) {
     return (
@@ -144,12 +144,12 @@ export function TechDetail({ techId }: TechDetailProps) {
     )
   }
 
-  if (!tech) {
+  if (!gaming) {
     return (
       <div className="p-6 max-w-6xl mx-auto">
         <Card>
           <CardContent className="p-6 text-center">
-            <p className="text-muted-foreground">Tech not found</p>
+            <p className="text-muted-foreground">Gaming not found</p>
           </CardContent>
         </Card>
       </div>
@@ -160,26 +160,26 @@ export function TechDetail({ techId }: TechDetailProps) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Tech Header */}
+          {/* Gaming Header */}
           <div>
-            <h1 className="text-3xl font-bold text-foreground mb-2">{tech.title}</h1>
+            <h1 className="text-3xl font-bold text-foreground mb-2">{gaming.title}</h1>
             <div className="flex items-center gap-4 text-muted-foreground">
-              <span>{tech.address || displayAddress || tech.locationName}</span>
-              {tech.rating && (
+              <span>{gaming.address || displayAddress || gaming.locationName}</span>
+              {gaming.rating && (
                 <div className="flex items-center gap-1">
                   <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                  <span>{tech.rating.toFixed(1)}</span>
+                  <span>{gaming.rating.toFixed(1)}</span>
                 </div>
               )}
-              <span>{tech.likesCount} likes</span>
+              <span>{gaming.likesCount} likes</span>
             </div>
           </div>
 
-          {/* Tech Image */}
+          {/* Gaming Image */}
           <div className="relative">
             <Image
-              src={tech.images?.[0] || "/placeholder.svg"}
-              alt={tech.title}
+              src={gaming.images?.[0] || "/placeholder.svg"}
+              alt={gaming.title}
               width={800}
               height={320}
               className="w-full h-64 md:h-80 object-cover rounded-lg"
@@ -187,19 +187,19 @@ export function TechDetail({ techId }: TechDetailProps) {
           </div>
 
           {/* Description */}
-          {tech.content && (
+          {gaming.content && (
             <div>
               <h2 className="text-xl font-semibold text-foreground mb-4">About</h2>
-              <p className="text-muted-foreground">{tech.content}</p>
+              <p className="text-muted-foreground">{gaming.content}</p>
             </div>
           )}
 
           {/* Offers Section */}
-          {tech.offers && tech.offers.length > 0 && (
+          {gaming.offers && gaming.offers.length > 0 && (
             <div>
               <h2 className="text-xl font-semibold text-foreground mb-4">Current Offers</h2>
               <div className="space-y-3">
-                {tech.offers.map((offer, index) => (
+                {gaming.offers.map((offer, index) => (
                   <Card key={index} className="border-l-4 border-l-secondary bg-card">
                     <CardContent className="p-4">
                       <h3 className="font-medium text-foreground mb-1">{offer.title}</h3>
@@ -217,11 +217,11 @@ export function TechDetail({ techId }: TechDetailProps) {
           {/* More Info */}
           <div>
             <h3 className="text-lg font-medium text-foreground mb-2">For more info</h3>
-            {tech.promotionLink && (
+            {gaming.promotionLink && (
               <Button 
                 variant="link" 
                 className="text-secondary hover:text-primary p-0"
-                onClick={() => window.open(tech.promotionLink, '_blank')}
+                onClick={() => window.open(gaming.promotionLink, '_blank')}
               >
                 Visit the promotion 🔗
               </Button>
@@ -230,22 +230,22 @@ export function TechDetail({ techId }: TechDetailProps) {
 
           {/* Action Buttons */}
           <div className="flex gap-4">
-            {tech.callNumber && (
+            {gaming.callNumber && (
               <Button 
                 size="lg" 
                 className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-3"
-                onClick={() => window.open(`tel:${tech.callNumber}`, '_self')}
+                onClick={() => window.open(`tel:${gaming.callNumber}`, '_self')}
               >
                 <Phone className="mr-2 h-5 w-5" />
                 Call
               </Button>
             )}
-            {(tech.companyWebsite || tech.promotionLink) && (
+            {(gaming.companyWebsite || gaming.promotionLink) && (
               <Button
                 size="lg"
                 variant="outline"
                 className="border-secondary text-secondary-foreground hover:bg-secondary/20 bg-transparent px-8 py-3"
-                onClick={() => window.open(tech.companyWebsite || tech.promotionLink, '_blank')}
+                onClick={() => window.open(gaming.companyWebsite || gaming.promotionLink, '_blank')}
               >
                 <Globe className="mr-2 h-5 w-5" />
                 Visit Website
@@ -258,17 +258,17 @@ export function TechDetail({ techId }: TechDetailProps) {
         <div className="space-y-6">
           {/* Action Buttons */}
           <div className="space-y-3">
-            {tech.instagramHandle && (
+            {gaming.instagramHandle && (
               <Button 
                 className="w-full bg-accent hover:bg-accent/80 text-accent-foreground"
-                onClick={() => tech.instagramHandle && window.open(`https://instagram.com/${tech.instagramHandle.replace('@', '')}`, '_blank')}
+                onClick={() => gaming.instagramHandle && window.open(`https://instagram.com/${gaming.instagramHandle.replace('@', '')}`, '_blank')}
               >
-                {tech.instagramHandle}
+                {gaming.instagramHandle}
               </Button>
             )}
             <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
               <Heart className="mr-2 h-4 w-4" />
-              Like ({tech.likesCount})
+              Like ({gaming.likesCount})
             </Button>
             <Button className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground">
               <Share className="mr-2 h-4 w-4" />
@@ -281,13 +281,13 @@ export function TechDetail({ techId }: TechDetailProps) {
           </div>
 
           {/* Address */}
-          {tech.branches && tech.branches.length > 0 && (
+          {gaming.branches && gaming.branches.length > 0 && (
             <div>
               <h3 className="text-lg font-semibold text-foreground mb-3">
-                {tech.branches.length === 1 ? 'Address' : 'Locations'}
+                {gaming.branches.length === 1 ? 'Address' : 'Locations'}
               </h3>
               <div className="space-y-3">
-                {tech.branches.map((branch, index) => (
+                {gaming.branches.map((branch, index) => (
                   <Card key={index} className="border-l-4 border-l-gray-500 bg-card cursor-pointer hover:bg-muted/50 transition-colors"
                         onClick={() => {
                           const query = encodeURIComponent(branch.address);
@@ -314,11 +314,11 @@ export function TechDetail({ techId }: TechDetailProps) {
           )}
 
           {/* Timings */}
-          {tech.timings && (
+          {gaming.timings && (
             <div>
               <h3 className="text-lg font-semibold text-foreground mb-3">Timings</h3>
               <div className="space-y-2">
-                {Object.entries(tech.timings).map(([day, time]) => (
+                {Object.entries(gaming.timings).map(([day, time]) => (
                   time && (
                     <div key={day} className="flex justify-between items-center py-1">
                       <span className="text-sm text-muted-foreground capitalize">{day}</span>
@@ -331,11 +331,11 @@ export function TechDetail({ techId }: TechDetailProps) {
           )}
 
           {/* Recent Comments */}
-          {tech.comments && tech.comments.length > 0 && (
+          {gaming.comments && gaming.comments.length > 0 && (
             <div>
               <h3 className="text-lg font-semibold text-foreground mb-3">Recent Reviews</h3>
               <div className="space-y-3">
-                {tech.comments.slice(0, 3).map((comment) => (
+                {gaming.comments.slice(0, 3).map((comment) => (
                   <Card key={comment.id} className="bg-card">
                     <CardContent className="p-3">
                       <div className="flex items-center gap-2 mb-2">

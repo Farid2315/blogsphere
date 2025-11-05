@@ -1,101 +1,108 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Bookmark } from "lucide-react"
-import Image from "next/image"
 
-const techItems = [
+const techs = [
   {
     id: 1,
-    name: "Tech Store",
+    name: "Tech Name",
     location: "Location",
-    image: "/modern-tech-store-with-laptops-and-gadgets.jpg",
-    offer: "Latest gadgets 40% off, extended warranty included..T&C",
+    image: "/modern-tech-interior.png",
+    offer: "offer type like 50% or by 1 get 1 or launch offer etc..T&C",
   },
   {
     id: 2,
-    name: "Mobile Hub",
+    name: "Tech Name",
     location: "Location",
-    image: "/modern-tech-store-with-laptops-and-gadgets.jpg",
-    offer: "Smartphone deals 50% off, trade-in offers available..T&C",
+    image: "/elegant-tech-dining.png",
+    offer: "offer type like 50% or by 1 get 1 or launch offer etc..T&C",
   },
   {
     id: 3,
-    name: "Laptop Center",
+    name: "Tech Name",
     location: "Location",
-    image: "/modern-tech-store-with-laptops-and-gadgets.jpg",
-    offer: "Gaming laptops 35% off, free software installation..T&C",
+    image: "/placeholder-6p0x1.png",
+    offer: "offer type like 50% or by 1 get 1 or launch offer etc..T&C",
   },
   {
     id: 4,
-    name: "Smart Home",
+    name: "Tech Name",
     location: "Location",
-    image: "/modern-tech-store-with-laptops-and-gadgets.jpg",
-    offer: "IoT devices 60% off, free home setup service included..T&C",
+    image: "/fine-dining-tech.png",
+    offer: "offer type like 50% or by 1 get 1 or launch offer etc..T&C",
   },
   {
     id: 5,
-    name: "Audio Zone",
+    name: "Tech Name",
     location: "Location",
-    image: "/modern-tech-store-with-laptops-and-gadgets.jpg",
-    offer: "Premium headphones 45% off, sound testing available..T&C",
+    image: "/placeholder-2em4e.png",
+    offer: "offer type like 50% or by 1 get 1 or launch offer etc..T&C",
   },
   {
     id: 6,
-    name: "Camera World",
+    name: "Tech Name",
     location: "Location",
-    image: "/modern-tech-store-with-laptops-and-gadgets.jpg",
-    offer: "DSLR cameras 55% off, photography workshop included..T&C",
+    image: "/trendy-tech-interior.png",
+    offer: "offer type like 50% or by 1 get 1 or launch offer etc..T&C",
   },
 ]
 
 export function TechGrid() {
   return (
-    <div className="p-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {techItems.map((item) => (
-          <Link key={item.id} href={`/tech/${item.id}`}>
-            <Card className="group cursor-pointer overflow-hidden border-2 border-red-500/20 hover:border-red-500/40 transition-all duration-300 bg-card">
-              <div className="relative px-2">
-                <Image src={item.image || "/placeholder.svg"} alt={item.name} className="w-full h-48 object-cover" />
+    <div className="p-3 sm:p-4 lg:p-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
+        {techs.map((tech) => (
+          <Link key={tech.id} href={`/tech/${tech.id}`}>
+            <Card className="group cursor-pointer overflow-hidden border-2 border-gray-500/20 hover:border-gray-500/40 transition-all duration-300 bg-card">
+              <div className="relative">
+                <Image
+                  src={tech.image || "/placeholder.svg"}
+                  alt={tech.name}
+                  width={400}
+                  height={192}
+                  className="w-full h-40 sm:h-48 object-cover"
+                />
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="absolute top-2 right-2 bg-black/50 hover:bg-black/70 text-white"
+                  className="absolute top-2 right-2 bg-black/50 hover:bg-black/70 text-white h-8 w-8 sm:h-10 sm:w-10"
                   onClick={(e) => {
                     e.preventDefault()
+                    // Handle bookmark
                   }}
                 >
-                  <Bookmark className="h-4 w-4" />
+                  <Bookmark className="h-3 w-3 sm:h-4 sm:w-4" />
                 </Button>
               </div>
-              <CardContent className="p-4">
+              <CardContent className="p-3 sm:p-4">
                 <div className="flex justify-between items-start mb-2">
-                  <div>
-                    <h3 className="font-semibold text-foreground">{item.name}</h3>
-                    <p className="text-sm text-muted-foreground">{item.location}</p>
+                  <div className="min-w-0 flex-1">
+                    <h3 className="font-semibold text-foreground text-sm sm:text-base truncate">{tech.name}</h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground truncate">{tech.location}</p>
                   </div>
-                  <div className="text-xs text-muted-foreground">rating</div>
+                  <div className="text-xs text-muted-foreground ml-2">rating</div>
                 </div>
 
-                <div className="mb-4">
-                  <h4 className="text-sm font-medium text-foreground mb-1">Offer:</h4>
-                  <p className="text-xs text-muted-foreground">{item.offer}</p>
+                <div className="mb-3 sm:mb-4">
+                  <h4 className="text-xs sm:text-sm font-medium text-foreground mb-1">Offer:</h4>
+                  <p className="text-xs text-muted-foreground line-clamp-2">{tech.offer}</p>
                 </div>
 
-                <div className="flex gap-2">
+                <div className="flex flex-col xs:flex-row gap-2">
                   <Button
                     size="sm"
-                    className="bg-primary hover:bg-primary/90 text-primary-foreground flex-1"
+                    className="bg-purple-600 hover:bg-purple-700 text-white flex-1 text-xs sm:text-sm"
                     onClick={(e) => e.preventDefault()}
                   >
                     @userld
                   </Button>
                   <Button
                     size="sm"
-                    className="bg-primary hover:bg-primary/90 text-primary-foreground flex-1"
+                    className="bg-purple-600 hover:bg-purple-700 text-white flex-1 text-xs sm:text-sm"
                     onClick={(e) => e.preventDefault()}
                   >
                     @userld
