@@ -1,22 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 
-export async function GET(request: NextRequest) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
-    // Check authentication
-    const session = await auth.api.getSession({
-      headers: request.headers,
-    })
-    
-    if (!session?.user?.id) {
+    const { id: userId } = await params
+
+    if (!userId) {
       return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
+        { error: 'User ID is required' },
+        { status: 400 }
       )
     }
-
-    const userId = session.user.id
 
     // Get user data
     const user = await prisma.user.findUnique({
@@ -30,51 +27,6 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Get current active promotions for featured section
-    let featuredPosts = await prisma.post.findMany({
-      where: {
-        authorId: userId,
-        isPromotion: true,
-        promotionEndDate: {
-          gte: new Date() // Current active promotions
-        }
-      },
-      select: {
-        id: true,
-        title: true,
-        images: true,
-        createdAt: true,
-        promotionOfferTag: true,
-        promotionEndDate: true
-      },
-      orderBy: {
-        createdAt: 'desc'
-      },
-      take: 6
-    })
-
-    // If no active promotions, get recent posts as fallback
-    if (featuredPosts.length === 0) {
-      featuredPosts = await prisma.post.findMany({
-        where: {
-          authorId: userId
-        },
-        select: {
-          id: true,
-          title: true,
-          images: true,
-          createdAt: true,
-          promotionOfferTag: true,
-          promotionEndDate: true
-        },
-        orderBy: {
-          createdAt: 'desc'
-        },
-        take: 6
-      })
-    }
-
-    // Get current active promotions (for stats)
     // Fetch all promotions for the user and classify on the server
     const allPromotions = await prisma.post.findMany({
       where: {
@@ -162,9 +114,6 @@ export async function GET(request: NextRequest) {
     })
     const pastPromotions = allPromotions.filter(p => classifyPromotion(p) === 'past')
 
-    // Active promotions count for stats
-    const activePromotionsCount = currentPromotions.length
-
     // Get total posts count
     const totalPosts = await prisma.post.count({
       where: {
@@ -172,18 +121,30 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    // Create mock profile data (since Profile model isn't available yet)
-    const profile = {
-      id: `profile_${userId}`,
-      userId: userId,
-      bio: "Welcome to my profile! 🌟 Sharing amazing content and experiences.",
-      followersCount: 148,
-      followingCount: 42,
-      postsCount: totalPosts,
-      collabsCount: 4,
-      instagramHandle: "user_instagram",
-      youtubeHandle: "user_youtube",
-      websiteUrl: "https://example.com"
+    // Try to get profile from database, or create mock data
+    let profile = await prisma.profile.findUnique({
+      where: { userId: userId }
+    })
+
+    // If no profile exists, create mock profile data
+    if (!profile) {
+      profile = {
+        id: `profile_${userId}`,
+        userId: userId,
+        bio: "Welcome to my profile! 🌟 Sharing amazing content and experiences.",
+        followersCount: 0,
+        followingCount: 0,
+        postsCount: totalPosts,
+        collabsCount: 0,
+        instagramHandle: null,
+        youtubeHandle: null,
+        websiteUrl: null,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }
+    } else {
+      // Update posts count
+      profile.postsCount = totalPosts
     }
 
     return NextResponse.json({
@@ -195,13 +156,21 @@ export async function GET(request: NextRequest) {
           email: user.email,
           image: user.image
         },
-        profile,
-        // Align with UI naming: featuredPosts are current promotions
+        profile: {
+          bio: profile.bio || "Welcome to my profile! 🌟 Sharing amazing content and experiences.",
+          followersCount: profile.followersCount,
+          followingCount: profile.followingCount,
+          postsCount: profile.postsCount,
+          collabsCount: profile.collabsCount,
+          instagramHandle: profile.instagramHandle,
+          youtubeHandle: profile.youtubeHandle,
+          websiteUrl: profile.websiteUrl
+        },
         featuredPosts: currentPromotions.slice(0, 6),
         pastPromotions: pastPromotions.slice(0, 6),
         stats: {
           totalPosts,
-          activePromotions: activePromotionsCount,
+          activePromotions: currentPromotions.length,
           pastPromotions: pastPromotions.length,
           featuredPosts: currentPromotions.length
         }
@@ -209,7 +178,7 @@ export async function GET(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Error fetching profile data:', error)
+    console.error('Error fetching user profile:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

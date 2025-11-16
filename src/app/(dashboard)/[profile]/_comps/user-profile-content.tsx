@@ -1,20 +1,10 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-//import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { LocationPermission } from "@/components/location-permission"
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
 import Image from "next/image"
 import { useEffect, useState } from "react"
-
-// const featuredImages = ["/fashion-model-portrait.png", "/business-woman-professional.jpg", "/casual-lifestyle-photo.jpg"]
-
-// const pastPromotions = [
-//   { name: "Brand X", logo: "/brand-logo-x.jpg" },
-//   { name: "Store Y", logo: "/store-logo-y.jpg" },
-//   { name: "Restaurant Z", logo: "/restaurant-logo-z.jpg" },
-// ]
 
 interface ProfileData {
   user: {
@@ -57,7 +47,11 @@ interface ProfileData {
   }
 }
 
-export function ProfileContent() {
+interface UserProfileContentProps {
+  userId: string
+}
+
+export default function UserProfileContent({ userId }: UserProfileContentProps) {
   const [profileData, setProfileData] = useState<ProfileData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -65,7 +59,7 @@ export function ProfileContent() {
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
-        const response = await fetch('/api/profile')
+        const response = await fetch(`/api/users/${userId}/profile`)
         if (!response.ok) {
           throw new Error('Failed to fetch profile data')
         }
@@ -82,8 +76,10 @@ export function ProfileContent() {
       }
     }
 
-    fetchProfileData()
-  }, [])
+    if (userId) {
+      fetchProfileData()
+    }
+  }, [userId])
 
   if (loading) {
     return (
@@ -125,7 +121,6 @@ export function ProfileContent() {
               <p className="text-muted-foreground mt-1 mb-2">
                 {profile.bio || "Welcome to my profile! 🌟 Sharing amazing content and experiences."}
               </p>
-              <p className="text-muted-foreground text-sm">{user.email}</p>
 
               {/* Stats - Mobile Only (below bio) */}
               <div className="flex justify-around gap-4 py-4 lg:hidden border-y border-border my-4">
@@ -152,19 +147,8 @@ export function ProfileContent() {
                   See All Posts
                 </Button>
               </div>
-              <div className="flex gap-2 mt-2 mb-2">
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => {
-                    // TODO: Implement edit bio functionality
-                    alert("Edit bio functionality coming soon!")
-                  }}
-                >
-                  Edit Bio
-                </Button>
-              </div>
-              <div className="flex gap-2">
+              
+              <div className="flex gap-2 mt-4">
                 {profile.instagramHandle && (
                   <Button
                     variant="outline"
@@ -186,6 +170,19 @@ export function ProfileContent() {
                   >
                     <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                    </svg>
+                  </Button>
+                )}
+                {profile.websiteUrl && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="hover:bg-gray-100 dark:hover:bg-gray-800"
+                    onClick={() => window.open(profile.websiteUrl, '_blank')}
+                  >
+                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
                     </svg>
                   </Button>
                 )}
@@ -295,9 +292,6 @@ export function ProfileContent() {
 
         {/* Stats Sidebar */}
         <div className="space-y-6">
-          {/* Location Permission */}
-          <LocationPermission />
-          
           {/* Stats - Desktop Only */}
           <div className="hidden lg:block text-center space-y-4">
             <div>

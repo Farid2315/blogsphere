@@ -1,6 +1,11 @@
-import AllPostsContent from "./_comps/all-posts-content"
+import { AppLayout } from "@/components/layout/app-layout"
+import UserProfileContent from "./_comps/user-profile-content"
 
-export default async function AllPostsPage({ params }: { params: Promise<{ profile: string }> }) {
+export default async function UserProfilePage({ params }: { params: Promise<{ profile: string }> }) {
   const { profile } = await params
-  return <AllPostsContent userId={profile} />
+  return (
+    <AppLayout title="Profile">
+      <UserProfileContent userId={profile} />
+    </AppLayout>
+  )
 }
