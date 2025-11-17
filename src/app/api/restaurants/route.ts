@@ -101,7 +101,7 @@ export async function GET(request: NextRequest) {
                             { $and: [ { $ne: ["$$locLat", null] }, { $ne: ["$$locLng", null] } ] },
                             {
                               $multiply: [
-                                6371000,
+                                6371,
                                 {
                                   $multiply: [
                                     2,
@@ -137,7 +137,7 @@ export async function GET(request: NextRequest) {
                                     { $and: [ { $ne: ["$$bLat", null] }, { $ne: ["$$bLng", null] } ] },
                                     {
                                       $multiply: [
-                                        6371000,
+                                        6371,
                                         {
                                           $multiply: [
                                             2,
@@ -234,7 +234,7 @@ export async function GET(request: NextRequest) {
                       { $and: [ { $ne: ["$$locLat", null] }, { $ne: ["$$locLng", null] } ] },
                       {
                         $multiply: [
-                          6371000,
+                          6371,
                           {
                             $multiply: [
                               2,

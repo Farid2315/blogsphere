@@ -30,16 +30,16 @@ export function calculateDistance(coord1: Coordinates, coord2: Coordinates): num
 
 /**
  * Format distance for display
- * @param distanceInMeters Distance in meters
+ * @param distanceInKm Distance in kilometers
  * @returns Formatted distance string
  */
-export function formatDistance(distanceInMeters: number): string {
-  if (distanceInMeters === 0) {
+export function formatDistance(distanceInKm: number): string {
+  if (distanceInKm === 0) {
     return "0m";
-  } else if (distanceInMeters < 1000) {
-    return `${Math.round(distanceInMeters)}m`;
+  } else if (distanceInKm < 1) {
+    return `${Math.round(distanceInKm * 1000)}m`;
   } else {
-    return `${(distanceInMeters / 1000).toFixed(1)}km`;
+    return `${distanceInKm.toFixed(1)}km`;
   }
 }
 
