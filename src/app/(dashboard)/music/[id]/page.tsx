@@ -1,5 +1,5 @@
 import { AppLayout } from "@/components/layout/app-layout"
-import { MusicDetail } from "../_comps/music-detail"
+import { MusicDetail } from "@/components/music-detail"
 
 interface MusicPageProps {
   params: {
@@ -9,8 +9,8 @@ interface MusicPageProps {
 
 export default function MusicPage({ params }: MusicPageProps) {
   return (
-    <AppLayout title="Music Item">
-      <MusicDetail />
+    <AppLayout title="Music Details">
+      <MusicDetail musicId={params.id} />
     </AppLayout>
   )
 }
