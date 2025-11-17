@@ -1,118 +1,405 @@
 "use client"
 
 import Link from "next/link"
-import Image from "next/image"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Bookmark } from "lucide-react"
+import { Heart, MessageCircle, Share, MapPin, Tag, ChevronLeft, ChevronRight } from "lucide-react"
+import Image from "next/image"
+import { useEffect, useState } from "react"
+import { convertCoordinateStringToAddress } from "@/utils/coordinate-converter"
+import { useGeolocation } from "@/hooks/use-geolocation"
+import { formatDistance } from "@/utils/distance"
 
-const musics = [
-  {
-    id: 1,
-    name: "Music Name",
-    location: "Location",
-    image: "/modern-music-interior.png",
-    offer: "offer type like 50% or by 1 get 1 or launch offer etc..T&C",
-  },
-  {
-    id: 2,
-    name: "Music Name",
-    location: "Location",
-    image: "/elegant-music-dining.png",
-    offer: "offer type like 50% or by 1 get 1 or launch offer etc..T&C",
-  },
-  {
-    id: 3,
-    name: "Music Name",
-    location: "Location",
-    image: "/placeholder-6p0x1.png",
-    offer: "offer type like 50% or by 1 get 1 or launch offer etc..T&C",
-  },
-  {
-    id: 4,
-    name: "Music Name",
-    location: "Location",
-    image: "/fine-dining-music.png",
-    offer: "offer type like 50% or by 1 get 1 or launch offer etc..T&C",
-  },
-  {
-    id: 5,
-    name: "Music Name",
-    location: "Location",
-    image: "/placeholder-2em4e.png",
-    offer: "offer type like 50% or by 1 get 1 or launch offer etc..T&C",
-  },
-  {
-    id: 6,
-    name: "Music Name",
-    location: "Location",
-    image: "/trendy-music-interior.png",
-    offer: "offer type like 50% or by 1 get 1 or launch offer etc..T&C",
-  },
-]
+interface Music {
+  id: string
+  title: string
+  content: string
+  locationName: string
+  images: string[]
+  offers: Array<{
+    title: string
+    description: string
+    validTill?: string
+  }>
+  likesCount: number
+  branches: Array<{
+    name: string
+    address: string
+    latitude: number
+    longitude: number
+  }>
+  distance?: number
+  promotionOfferTag?: string
+  author?: {
+    id: string
+    name?: string
+    image?: string
+  }
+}
 
 export function MusicGrid() {
-  return (
-    <div className="p-3 sm:p-4 lg:p-6">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
-        {musics.map((music) => (
-          <Link key={music.id} href={`/music/${music.id}`}>
-            <Card className="group cursor-pointer overflow-hidden border-2 border-gray-500/20 hover:border-gray-500/40 transition-all duration-300 bg-card">
-              <div className="relative">
-                <Image
-                  src={music.image || "/placeholder.svg"}
-                  alt={music.name}
-                  width={400}
-                  height={192}
-                  className="w-full h-40 sm:h-48 object-cover"
-                />
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="absolute top-2 right-2 bg-black/50 hover:bg-black/70 text-white h-8 w-8 sm:h-10 sm:w-10"
-                  onClick={(e) => {
-                    e.preventDefault()
-                    // Handle bookmark
-                  }}
-                >
-                  <Bookmark className="h-3 w-3 sm:h-4 sm:w-4" />
-                </Button>
-              </div>
-              <CardContent className="p-3 sm:p-4">
-                <div className="flex justify-between items-start mb-2">
-                  <div className="min-w-0 flex-1">
-                    <h3 className="font-semibold text-foreground text-sm sm:text-base truncate">{music.name}</h3>
-                    <p className="text-xs sm:text-sm text-muted-foreground truncate">{music.location}</p>
-                  </div>
-                  <div className="text-xs text-muted-foreground ml-2">rating</div>
-                </div>
+  const [musics, setMusics] = useState<Music[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [addressCache, setAddressCache] = useState<{ [key: string]: string }>({})
+  const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set())
+  const [showOfferOverlay, setShowOfferOverlay] = useState<string | null>(null)
+  const { latitude, longitude, getCurrentPosition } = useGeolocation()
 
-                <div className="mb-3 sm:mb-4">
-                  <h4 className="text-xs sm:text-sm font-medium text-foreground mb-1">Offer:</h4>
-                  <p className="text-xs text-muted-foreground line-clamp-2">{music.offer}</p>
-                </div>
+  const handleLike = (musicId: string, e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault()
+      e.stopPropagation()
+    }
+    setLikedPosts(prev => {
+      const newLiked = new Set(prev)
+      if (newLiked.has(musicId)) {
+        newLiked.delete(musicId)
+      } else {
+        newLiked.add(musicId)
+      }
+      return newLiked
+    })
+  }
 
-                <div className="flex flex-col xs:flex-row gap-2">
-                  <Button
-                    size="sm"
-                    className="bg-purple-600 hover:bg-purple-700 text-white flex-1 text-xs sm:text-sm"
-                    onClick={(e) => e.preventDefault()}
-                  >
-                    @userld
-                  </Button>
-                  <Button
-                    size="sm"
-                    className="bg-purple-600 hover:bg-purple-700 text-white flex-1 text-xs sm:text-sm"
-                    onClick={(e) => e.preventDefault()}
-                  >
-                    @userld
-                  </Button>
-                </div>
+  const handleDoubleClick = (musicId: string, e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    handleLike(musicId)
+  }
+
+  const toggleOfferOverlay = (musicId: string, e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setShowOfferOverlay(prev => prev === musicId ? null : musicId)
+  }
+
+  useEffect(() => {
+    const fetchMusics = async () => {
+      try {
+        setLoading(true)
+        
+        let apiUrl = '/api/music'
+        const params = new URLSearchParams()
+        
+        if (latitude && longitude) {
+          params.append('latitude', latitude.toString())
+          params.append('longitude', longitude.toString())
+          params.append('radius', '100000')
+        }
+        
+        if (params.toString()) {
+          apiUrl += `?${params.toString()}`
+        }
+        
+        const response = await fetch(apiUrl)
+        const data = await response.json()
+        
+        if (data.success) {
+          let musicsData: any =
+            data?.data?.musics ??
+            data?.data?.music ??
+            data?.musics ??
+            data?.music ??
+            []
+
+          if (!Array.isArray(musicsData)) {
+            musicsData = musicsData ? [musicsData] : []
+          }
+
+          setMusics(musicsData as Music[])
+          
+          const newAddressCache: { [key: string]: string } = {}
+          for (const music of musicsData as Music[]) {
+            if (music.locationName) {
+              try {
+                const address = await convertCoordinateStringToAddress(music.locationName)
+                newAddressCache[music.id] = address
+              } catch (error) {
+                console.error('Error converting address for music:', music.id, error)
+                newAddressCache[music.id] = music.locationName
+              }
+            }
+          }
+          setAddressCache(newAddressCache)
+        } else {
+          setError(data.error || 'Failed to fetch music posts')
+        }
+      } catch (err) {
+        setError('Failed to fetch music posts')
+        console.error('Error fetching musics:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchMusics()
+  }, [latitude, longitude])
+
+  if (loading) {
+    return (
+      <div className="p-3 sm:p-4 lg:p-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <Card key={index} className="animate-pulse bg-card">
+              <div className="h-32 sm:h-36 bg-muted rounded-t-lg"></div>
+              <CardContent className="p-0 sm:p-4">
+                <div className="h-4 bg-muted rounded mb-2"></div>
+                <div className="h-3 bg-muted rounded mb-4"></div>
+                <div className="h-3 bg-muted rounded mb-2"></div>
+                <div className="h-8 bg-muted rounded"></div>
               </CardContent>
             </Card>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="p-3 sm:p-4 lg:p-6">
+        <div className="text-center py-12">
+          <p className="text-muted-foreground mb-4">{error}</p>
+          <Button onClick={() => window.location.reload()}>Try Again</Button>
+        </div>
+      </div>
+    )
+  }
+
+  if (musics.length === 0) {
+    return (
+      <div className="p-3 sm:p-4 lg:p-6">
+        <div className="text-center py-12">
+          <p className="text-muted-foreground mb-4">No music posts found</p>
+          <p className="text-sm text-muted-foreground">Be the first to add a music promotion!</p>
+        </div>
+      </div>
+    )
+  }
+  
+  return (
+    <div className="p-3 sm:p-4 lg:p-6">
+      {!latitude && !longitude && (
+        <div className="mb-6 p-4 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-medium text-gray-800 dark:text-gray-100 mb-1">Find nearby music</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Allow location access to see music posts sorted by distance</p>
+            </div>
+            <Button 
+              onClick={getCurrentPosition}
+              variant="outline"
+              size="sm"
+              className="border-gray-400 dark:border-gray-600 text-gray-700 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
+            >
+              <MapPin className="h-4 w-4 mr-2" />
+              Enable Location
+            </Button>
+          </div>
+        </div>
+      )}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
+        {musics.map((music) => (
+          <Link key={music.id} href={`/music/${music.id}`}>
+            <Card className="group cursor-pointer overflow-hidden border border-gray-200 dark:border-gray-700 hover:border-primary/50 transition-all duration-300 bg-card shadow-md hover:shadow-xl hover:shadow-blue-500/10 hover:scale-[1.02] hover:-translate-y-1 rounded-xl h-fit transform-gpu">
+            <div className="flex items-center gap-2 p-1 pb-0 pl-5">
+              <div className="w-7 h-7 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700 flex-shrink-0">
+                {music.author?.image ? (
+                  <Image
+                    src={music.author.image}
+                    alt={music.author?.name || "User"}
+                    width={28}
+                    height={28}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white text-xs font-semibold">
+                    {(music.author?.name || "U").charAt(0).toUpperCase()}
+                  </div>
+                )}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-semibold text-gray-900 dark:text-gray-100 truncate">
+                  @{music.author?.name || "MusicLover"}
+                </p>
+              </div>
+              <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1 pr-5">
+                {typeof music.distance === 'number' && (
+                  <>
+                    <MapPin className="h-3 w-3" />
+                    <span>{formatDistance(music.distance)}</span>
+                  </>
+                )}
+              </div>
+            </div>
+
+            <div className="relative overflow-hidden" onDoubleClick={(e) => handleDoubleClick(music.id, e)}>
+              {(() => {
+                const images = music.images && music.images.length > 0 ? music.images : ["/placeholder.svg"]
+                return (
+                  <CardImageSlider images={images}>
+                    {(music.offers.length > 0 || music.promotionOfferTag) && (
+                      <div className="absolute top-2 left-2">
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault()
+                            e.stopPropagation()
+                            toggleOfferOverlay(music.id, e)
+                          }}
+                          className="bg-orange-500 hover:bg-orange-600 text-white px-2 py-1 rounded-full text-xs font-bold flex items-center gap-1 shadow-lg transition-all duration-200"
+                        >
+                          <Tag className="h-3 w-3" />
+                          {music.promotionOfferTag || "GREAT OFFERS"}
+                        </button>
+                        {showOfferOverlay === music.id && (
+                          <div className="absolute top-full left-0 mt-2 bg-black/90 text-white p-3 rounded-lg shadow-xl z-10 min-w-[200px]">
+                            {music.offers.length > 0 ? (
+                              <>
+                                <p className="text-sm font-semibold mb-1">{music.offers[0].title}</p>
+                                <p className="text-xs text-gray-300">{music.offers[0].description}</p>
+                                {music.offers[0].validTill && (
+                                  <p className="text-xs text-orange-300 mt-1">Valid till: {music.offers[0].validTill}</p>
+                                )}
+                              </>
+                            ) : (
+                              <p className="text-sm font-semibold">{music.promotionOfferTag}</p>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </CardImageSlider>
+                )
+              })()}
+            </div>
+
+            <div className="p-2">
+              <h3 className="font-bold text-gray-900 dark:text-gray-100 text-lg mb-1 line-clamp-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
+                {music.title}
+              </h3>
+              
+              <div className="flex items-center gap-1 mb-1">
+                <MapPin className="h-3 w-3 text-gray-500" />
+                <span className="text-xs text-gray-600 dark:text-gray-400 truncate">
+                  {addressCache[music.id] || music.locationName}
+                </span>
+              </div>
+
+              {music.offers.length > 0 && (
+                <div className="mb-2">
+                  <p className="text-xs text-orange-600 dark:text-orange-400 font-medium flex items-center gap-1">
+                    <span>💡</span>
+                    Special Offer: {music.offers[0].title}
+                  </p>
+                </div>
+              )}
+
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      handleLike(music.id, e)
+                    }}
+                    className="flex items-center gap-1 hover:scale-110 transition-transform"
+                  >
+                    <Heart 
+                      className={`h-4 w-4 ${likedPosts.has(music.id) ? 'fill-red-500 text-red-500' : 'text-gray-600 dark:text-gray-400'}`}
+                    />
+                    <span className="text-xs text-gray-600 dark:text-gray-400">
+                      {likedPosts.has(music.id) ? music.likesCount + 1 : music.likesCount}
+                    </span>
+                  </button>
+                  
+                  <button 
+                    onClick={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                    }}
+                    className="flex items-center gap-1 hover:scale-110 transition-transform"
+                  >
+                    <MessageCircle className="h-4 w-4 text-gray-600 dark:text-gray-400" />
+                    <span className="text-xs text-gray-600 dark:text-gray-400">156</span>
+                  </button>
+                  
+                  <button 
+                    onClick={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                    }}
+                    className="flex items-center gap-1 hover:scale-110 transition-transform"
+                  >
+                    <Share className="h-4 w-4 text-gray-600 dark:text-gray-400" />
+                    <span className="text-xs text-gray-600 dark:text-gray-400">Share</span>
+                  </button>
+                </div>
+              </div>
+
+              <div className="mt-2.5 mb-1">
+                <Button className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-1 text-xs rounded-lg mt-2 transition-all duration-300 group-hover:bg-blue-600 group-hover:shadow-md">
+                  View Offer Details & Directions
+                </Button>
+              </div>
+            </div>
+          </Card>
           </Link>
         ))}
       </div>
+    </div>
+  )
+}
+
+function CardImageSlider({ images, children }: { images: string[]; children?: React.ReactNode }) {
+  const [index, setIndex] = useState(0)
+  const img1 = images[index % images.length] || "/placeholder.svg"
+  const img2 = images[(index + 1) % images.length] || "/placeholder.svg"
+
+  const prev = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIndex((i) => (i - 1 + images.length) % images.length)
+  }
+  const next = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIndex((i) => (i + 1) % images.length)
+  }
+
+  return (
+    <div className="relative">
+      <div className="flex">
+        <Image
+          src={img1}
+          alt="Music image"
+          width={200}
+          height={180}
+          className="w-1/2 h-32 sm:h-36 object-cover transition-transform duration-300 group-hover:scale-105"
+        />
+        <Image
+          src={img2}
+          alt="Music image"
+          width={200}
+          height={180}
+          className="w-1/2 h-32 sm:h-36 object-cover transition-transform duration-300 group-hover:scale-105"
+        />
+      </div>
+      <button
+        aria-label="Previous image"
+        className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 text-white rounded-full p-1 hover:bg-black/60"
+        onClick={prev}
+      >
+        <ChevronLeft className="h-4 w-4" />
+      </button>
+      <button
+        aria-label="Next image"
+        className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 text-white rounded-full p-1 hover:bg-black/60"
+        onClick={next}
+      >
+        <ChevronRight className="h-4 w-4" />
+      </button>
+      {children}
     </div>
   )
 }
